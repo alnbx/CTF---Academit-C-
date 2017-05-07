@@ -46,11 +46,11 @@ bool player::areAllDead(void)
 	return false;
 }
 
-void player::addToScore(void)
+void player::addToScore(bool quite)
 {
 	gotoxyAux(6, 6);
 	setTextColor(DARK_BLUE, WHITE);
-	std::cout << name << " had won the game!";
+	if (!quite) { std::cout << name << " had won the game!"; };
 	Sleep(2000);
 	setTextColor(WHITE, BLACK);
 	score++;
@@ -175,7 +175,7 @@ void player::setKeys(char * keysToSet)
 	for (; index < KEYS_NUMBER; index++)	{ gameKeys[index] = keysToSet[index]; }
 }
 
-bool player:: moveFromFile(checker**& board, int keys[])
+bool player:: moveFromFile(checker**& board, int keys[], bool quite)
 {
 	bool returnRes;
 	int colDir, rowDir;
@@ -192,7 +192,7 @@ bool player:: moveFromFile(checker**& board, int keys[])
 
 		(*checkerToMove)->moveDirCol = colDir;
 		(*checkerToMove)->moveDirRow = rowDir;
-		returnRes = (*checkerToMove)->move(board, winningFlag, typeOfChecker(firstChecker), typeOfChecker(secondChecker), typeOfChecker(thirdChecker));
+		returnRes = (*checkerToMove)->move(board, winningFlag, typeOfChecker(firstChecker), typeOfChecker(secondChecker), typeOfChecker(thirdChecker), quite);
 		if (nullptr != *checkerToMove) { updateCheckerAddress(board, checkerToMove); }
 		return returnRes;
 	}
@@ -200,7 +200,7 @@ bool player:: moveFromFile(checker**& board, int keys[])
 }
 
 ////////////WTFFFFFFFFFFFFFFFFFFFFFFF
-bool player::readMovesFormTextFile(checker**& board,std::ifstream &movesFile) // TODO: Make Better
+bool player::readMovesFormTextFile(checker**& board,std::ifstream &movesFile, bool quite) // TODO: Make Better
 {
 	if (movesFile.good())
 	{
@@ -230,7 +230,7 @@ bool player::readMovesFormTextFile(checker**& board,std::ifstream &movesFile) //
 			keys[ROW] += (key - '1' + INITIAL_POINT);
 		}
 
-		return (moveFromFile(board, keys));
+		return (moveFromFile(board, keys, quite));
 	}
 	return false;
 }
@@ -289,7 +289,7 @@ Description:			The function handles the user press on the keyboard. if the user 
 						If the user pressed a moving key - it moves the current checker. Returns true f the player won.
 Dinamically allocated:	None
 ********************************************************************************************************************************/
-bool player::pressesKey(checker**& board, char key, bool recordGame, std::ofstream& movesFile)
+bool player::pressesKey(checker**& board, char key, bool recordGame, std::ofstream& movesFile, bool quite)
 {
 	bool returnRes = false;
 	checker** checkerToMove = nullptr;
@@ -299,7 +299,7 @@ bool player::pressesKey(checker**& board, char key, bool recordGame, std::ofstre
 		if (currentChecker != BLANK) 
 		{ 
 			checkerToMove = findCurrentChecker();
-			if (nullptr != checkerToMove) { (*checkerToMove)->stopChecker(BLACK); }
+			if (nullptr != checkerToMove) { (*checkerToMove)->stopChecker(BLACK, quite); }
 		}
 		currentChecker = (types)(key - '0');
 		return false;
@@ -321,7 +321,7 @@ bool player::pressesKey(checker**& board, char key, bool recordGame, std::ofstre
 			if (recordGame)
 				writeToFile((*checkerToMove), movesFile);
 
-			returnRes = (*checkerToMove)->move(board, winningFlag, typeOfChecker(firstChecker), typeOfChecker(secondChecker), typeOfChecker(thirdChecker));
+			returnRes = (*checkerToMove)->move(board, winningFlag, typeOfChecker(firstChecker), typeOfChecker(secondChecker), typeOfChecker(thirdChecker), quite);
 			if (nullptr != *checkerToMove) { updateCheckerAddress(board, checkerToMove); }
 			return returnRes;
 		}
@@ -335,7 +335,7 @@ Return value:			bool
 Description:			Moves the current checker with the direction it moved in the last time. Returns true if the player won.
 Dinamically allocated:	None
 ********************************************************************************************************************************/
-bool player::moveWithoutPressedKey(checker**& board, bool recordGame, std::ofstream& movesFile)
+bool player::moveWithoutPressedKey(checker**& board, bool recordGame, std::ofstream& movesFile, bool quite)
 {
 	bool returnRes = false;
 	checker** checkerToMove = nullptr;
@@ -350,7 +350,7 @@ bool player::moveWithoutPressedKey(checker**& board, bool recordGame, std::ofstr
 			if (recordGame)
 				writeToFile((*checkerToMove), movesFile);
 
-			returnRes = (*checkerToMove)->move(board, winningFlag, typeOfChecker(firstChecker), typeOfChecker(secondChecker), typeOfChecker(thirdChecker));
+			returnRes = (*checkerToMove)->move(board, winningFlag, typeOfChecker(firstChecker), typeOfChecker(secondChecker), typeOfChecker(thirdChecker), quite);
 			if (nullptr != *checkerToMove) { updateCheckerAddress(board, checkerToMove); }
 			return returnRes;
 		}

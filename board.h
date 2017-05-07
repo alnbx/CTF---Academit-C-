@@ -46,6 +46,7 @@ public:
 	bool loadBoardFromTextFile(const char *fileName, player& playerA, player& playerB);
 	void printBoard(void);
 	void resetBoard(void);
+	void clearBoard(void);
 	void emptyCheckLegalChecker(void);
 	void saveBoardToFile(const char* fileName);
 	const char* getBoardName(void) const { return boardName.c_str(); }
