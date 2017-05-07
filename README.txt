@@ -1,2 +1,2 @@
-This is out CTF project
+This is our CTF project
 Alon & Joni
