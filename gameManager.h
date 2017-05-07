@@ -68,6 +68,7 @@ private:
 	void openDirectory(void);
 	void playKeboard(std::ofstream& playerAMovesFile, std::ofstream& playerBMovesFile);
 	void finishTheGame(void);
+	void keyboardGame();
 	void printFinish(std::string& playerAName, std::string& playerBName, int maxLen);
 	void playWithFiles(std::ifstream & playerAfile, std::ifstream& playerBfile);
 	void runGameWithFiles(void);

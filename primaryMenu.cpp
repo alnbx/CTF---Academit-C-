@@ -31,14 +31,14 @@ Return value:			None
 Description:			The function takes and handles the user's choice.
 Dinamically allocated:	None
 ********************************************************************************************************************************/
-void primaryMenu::printMenuAndTakeUserChoice(gameManager *manager)
+void primaryMenu::printMenuAndTakeUserChoice(gameManager *manager, bool endGame)
 {
 	unsigned char userChose = 0;
 	printMenu(manager);
 
 	std::cin >> userChose;
 	choice = (userChoice)(userChose - '0');
-	handleUserChoice(manager);
+	handleUserChoice(manager, endGame);
 }
 
 /********************************************************************************************************************************
@@ -47,11 +47,12 @@ Return value:			None
 Description:			The function handles the user's choice and sets the desired action.
 Dinamically allocated:	None
 ********************************************************************************************************************************/
-void primaryMenu::handleUserChoice(gameManager *manager)
+void primaryMenu::handleUserChoice(gameManager *manager, bool endGame)
 {
 	unsigned char userChose = 0;
+	bool loopCheck = true;
 
-	do
+	while (loopCheck)
 	{
 		switch (choice)
 		{
@@ -63,13 +64,13 @@ void primaryMenu::handleUserChoice(gameManager *manager)
 		case (START_GAME):
 			manager->setReverseScore(false);
 			manager->run();
-			printMenu(manager);
+			loopCheck = false;
 			break;
 
 		case (REVERSED_MODE):
 			manager->setReverseScore(true);
 			manager->run();
-			printMenu(manager);
+			loopCheck = false;
 			break;
 
 		case (RESET_SCORE):
@@ -84,7 +85,8 @@ void primaryMenu::handleUserChoice(gameManager *manager)
 
 		case (EXIT):
 			std::cout << "Bye Bye..." << std::endl;
-			exit(0);
+			loopCheck = false;
+			endGame = true;
 			break;
 
 		default:
@@ -92,7 +94,11 @@ void primaryMenu::handleUserChoice(gameManager *manager)
 			std::cout << "\nBad Choice! Please try again: ";
 			break;
 		}
-		std::cin >> userChose;
-		choice = (userChoice)(userChose - '0');
-	} while (true);
+
+		if (loopCheck)
+		{
+			std::cin >> userChose;
+			choice = (userChoice)(userChose - '0');
+		}
+	}
 }

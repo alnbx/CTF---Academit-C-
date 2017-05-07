@@ -32,12 +32,12 @@ public:
 	}
 	
 	void setKeys(char *keysToSet);
-	bool pressesKey(checker**& gameBoard, char key, bool recordGame, std::ofstream& movesFile);
-	bool player::moveWithoutPressedKey(checker**& board, bool recordGame, std::ofstream& movesFile);
+	bool pressesKey(checker**& gameBoard, char key, bool recordGame, std::ofstream& movesFile, bool quite);
+	bool player::moveWithoutPressedKey(checker**& board, bool recordGame, std::ofstream& movesFile, bool quite);
 	void setName(void);
 	void printName(void) { std::cout << name << std::endl; };
 	bool areAllDead(void);
-	void addToScore(void);
+	void addToScore(bool quite);
 	checker *getChecker(int cheknum);
 	void updatePlayer();
 	void setPointersToCheckers(void);
@@ -64,10 +64,10 @@ public:
 	int getScore(void) { return score; }
 	std::string getName(void) { return name; }
 	checker** findCurrentChecker(void);
-	bool readMovesFormTextFile(checker**& board, std::ifstream &movesFile);
+	bool readMovesFormTextFile(checker**& board, std::ifstream &movesFile, bool quite);
 
 private:
-	bool moveFromFile(checker**& board, int keys[]);
+	bool moveFromFile(checker**& board, int keys[], bool quite);
 	bool isCheckerKey(char key);
 	void updateCheckerAddress(checker**& board, checker ** currentChecker);
 	void writeToFile(checker * check, std::ofstream & movesFile);
