@@ -197,6 +197,7 @@ void board::updatePlayerIfNeeded(types checkerType, int row, int col, player & p
 			playerA.setCheckers(checkerType, &(gameBoard[row][col]));
 		else 
 			playerB.setCheckers(checkerType, &(gameBoard[row][col]));
+		gameBoard[row][col].setPosition(col, row);
 	}
 }
 
@@ -422,6 +423,18 @@ void board::resetBoard(void)
 			if (isChecker(gameBoard[row][col].getType()))
 				gameBoard[row][col].resetChecker(_boardSize);
 		}
+	}
+}
+
+void board::clearBoard(void)
+{
+	checker clearedChecker;
+	int row = 0, col = 0;
+
+	for (; row < _boardSize + INITIAL_POINT; ++row)
+	{
+		for (col = 0; col < _boardSize + INITIAL_POINT; ++col)
+			gameBoard[row][col] = clearedChecker;
 	}
 }
 

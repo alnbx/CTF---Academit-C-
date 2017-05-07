@@ -26,15 +26,15 @@ public:
 
 	}
 
-	bool moveAux(checker **& gameBoard, types winningFlag, types firstChecker, types secondChecker, types thirdChecker);
-	bool move(checker**& gameBoard, types winningFlag, types firstChecker, types secondChecker, types thirdChecker);
+	bool moveAux(checker **& gameBoard, types winningFlag, types firstChecker, types secondChecker, types thirdChecker, bool quite);
+	bool move(checker**& gameBoard, types winningFlag, types firstChecker, types secondChecker, types thirdChecker, bool quite);
 	void setCheckerType(types typeToSet) { checkerType = typeToSet; };
 	void setPosition(int colToSet, int rowToSet) { col = colToSet; row = rowToSet; };
 	types getType(void) { return checkerType; };
 	void setDirection(Diraction dir);
 	void setMoveSea(bool canMove) { canMoveSea = canMove; }
 	void setMoveForest(bool canMove) { canMoveForest = canMove; }
-	void stopChecker(int backroundColor);
+	void stopChecker(int backroundColor, bool quite);
 	void eraseDraw();
 	void draw(types sign, int backroundColor);
 	void setPlayer(player *playerToSet) { checkerOwner = playerToSet; };
@@ -50,8 +50,8 @@ private:
 	void setColsAndRowsCheck2();
 	void setColsAndRowsCheck3();
 	void battleOpponent(checker *playerAChecker, checker *playerBChecker);
-	void erase(checker **& gameBoard);
-	void putCheckerInNewLocation(checker **& gameBoard, types typeToPut);
+	void erase(checker **& gameBoard, bool quite);
+	void putCheckerInNewLocation(checker **& gameBoard, types typeToPut, bool quite);
 	void copyBeforeNextMove(checker *copyTo, checker** const me) { *copyTo = *this; *me = copyTo; }
 	void resetLogic(int boardSize);
 

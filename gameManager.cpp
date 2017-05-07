@@ -104,23 +104,23 @@ void gameManager::playKeboard(std::ofstream& playerAMovesFile, std::ofstream& pl
 		{
 			choice = tolower(_getch());
 			if (choice == ESC_KEY) { if (breakGame = activateSecondaryMenu(sm)) { break; } };
-			if (playerA.pressesKey(myGameBoard, choice, recordGame, playerAMovesFile)) { flipScore ? playerB.addToScore() : playerA.addToScore(); break; }
-			if (playerB.pressesKey(myGameBoard, choice, recordGame, playerBMovesFile)) { flipScore ? playerA.addToScore() : playerB.addToScore(); break; }
+			if (playerA.pressesKey(myGameBoard, choice, recordGame, playerAMovesFile, quite)) { flipScore ? playerB.addToScore(quite) : playerA.addToScore(quite); break; }
+			if (playerB.pressesKey(myGameBoard, choice, recordGame, playerBMovesFile, quite)) { flipScore ? playerA.addToScore(quite) : playerB.addToScore(quite); break; }
 		}
 		else
 		{
 			if (((i++) % 2) == 0)
 			{
-				if (playerA.moveWithoutPressedKey(myGameBoard, recordGame, playerAMovesFile)) { flipScore ? playerB.addToScore() : playerA.addToScore(); break; }
+				if (playerA.moveWithoutPressedKey(myGameBoard, recordGame, playerAMovesFile, quite)) { flipScore ? playerB.addToScore(quite) : playerA.addToScore(quite); break; }
 			}
 			else
 			{
-				if (playerB.moveWithoutPressedKey(myGameBoard, recordGame, playerBMovesFile)) { flipScore ? playerA.addToScore() : playerB.addToScore(); break; }
+				if (playerB.moveWithoutPressedKey(myGameBoard, recordGame, playerBMovesFile, quite)) { flipScore ? playerA.addToScore(quite) : playerB.addToScore(quite); break; }
 			}
 		}
 
-		if (playerA.areAllDead()) { flipScore ? playerA.addToScore() : playerB.addToScore(); break; }
-		else if (playerB.areAllDead()) { flipScore ? playerB.addToScore() : playerA.addToScore(); break; }
+		if (playerA.areAllDead()) { flipScore ? playerA.addToScore(quite) : playerB.addToScore(quite); break; }
+		else if (playerB.areAllDead()) { flipScore ? playerB.addToScore(quite) : playerA.addToScore(quite); break; }
 	}
 }
 
@@ -150,24 +150,24 @@ void gameManager::printFinish(std::string& playerAName, std::string& playerBName
 void gameManager::playWithFiles(std::ifstream& playerAfile, std::ifstream& playerBfile)
 {
 	time_t i = time(NULL);
-	bool checkIfFileAOpen = playerAfile.is_open();
-	bool checkIfFileBOpen = playerBfile.is_open();
+	bool checkIfFileAOpen = playerAfile.good();
+	bool checkIfFileBOpen = playerBfile.good();
 
-	while (true) // add the stopping condition - if the two files reached to EOF - break the loop.
+	while (playerAfile.good() || playerBfile.good())
 	{
 		Sleep(delay);
 		
 		if ((((i++) % 2) == 0) && checkIfFileAOpen)
 		{
-			if (playerA.readMovesFormTextFile(gameBoard.getBoard(), playerAfile)) { playerA.addToScore(); break; }
+			if (playerA.readMovesFormTextFile(gameBoard.getBoard(), playerAfile, quite)) { playerA.addToScore(quite); break; }
 		}
 		else if (checkIfFileBOpen)
 		{
-			if (playerB.readMovesFormTextFile(gameBoard.getBoard(), playerBfile)) { playerB.addToScore(); break; }
+			if (playerB.readMovesFormTextFile(gameBoard.getBoard(), playerBfile, quite)) { playerB.addToScore(quite); break; }
 		}
 
-		if (playerA.areAllDead()) { playerB.addToScore(); break; }
-		else if (playerB.areAllDead()) { playerA.addToScore(); break; }
+		if (playerA.areAllDead()) { playerB.addToScore(quite); break; }
+		else if (playerB.areAllDead()) { playerA.addToScore(quite); break; }
 	}
 }
 
@@ -201,7 +201,36 @@ void gameManager::finishTheGame(void)
 	std::string playerBName = playerB.getName();
 	int maxLen = max(14, max(playerAName.length(), playerBName.length()));
 
-	if (runFromFiles)	{ printFinish(playerAName, playerBName, maxLen); }
+	//if (runFromFiles)	{ printFinish(playerAName, playerBName, maxLen); }
+	printFinish(playerAName, playerBName, maxLen);
+}
+
+void gameManager::keyboardGame()
+{
+	bool endGame = false;
+	int numberOfFileBoards = boardFiles.size();
+
+	while (!(endGame))
+	{
+		if (numberOfFileBoards > round)
+		{
+			if (!(boardRandom))
+			{
+				if (!firstGame)
+				{
+					gameBoard.clearBoard();
+					playerA.resetPlayer();
+					playerB.resetPlayer();
+				}
+
+				gameBoard.loadBoardFromTextFile(boardFiles[round].c_str(), playerA, playerB);
+			}
+			_primarymenu.printMenuAndTakeUserChoice(this, endGame);
+		}
+		else
+			endGame = true;
+	}
+	finishTheGame();
 }
 
 /********************************************************************************************************************************
@@ -217,8 +246,8 @@ void gameManager::manageGame(int argc, char** argv)
 
 	if (runFromFiles) { openDirectory(); };
 
-	if (boardRandom) { _primarymenu.printMenuAndTakeUserChoice(this); }
-	else { runGameWithFiles(); }
+	if (movesKeyboard) { keyboardGame(); }
+	else				{ runGameWithFiles(); }
 
 	finishTheGame();
 }
@@ -285,10 +314,13 @@ void gameManager::takeUserParams(int argc, char ** argv)
 	std::string key;
 	std::string value;
 
-	for (; i < (argc - 1); i++)
+	for (; i < argc; i++)
 	{
 		key = argv[i];
-		value = argv[++i];
+
+		if (!key.compare("-quite")) { value = "t"; }
+		else					   { value = argv[++i]; }
+
 		turnOnFlags(key, value);
 	}
 }
@@ -298,7 +330,7 @@ static unsigned int stringToNumber(std::string str)
 	int i = 0;
 	unsigned int result = 0;
 
-	for (; i < str.size(); i++)
+	for (; i < (unsigned int)str.size(); i++)
 	{
 		result *= 10;
 		result += (str[i] - '0');
@@ -312,7 +344,7 @@ void gameManager::turnOnFlags(std::string key, std::string value)
 	std::string _strBoard = "-board";
 	std::string _strMoves = "-moves";
 	std::string _strPath  = "-path";
-	std::string _strquiet = "-quiet";
+	std::string _strquiet = "-quite";
 	std::string _strDelay = "-delay";
 
 	if (MATCH == (key.compare(_strBoard)))
@@ -403,7 +435,7 @@ Dinamically allocated:	None
 ********************************************************************************************************************************/
 void gameManager::prepareForGame(void)
 {	
-	if (!firstGame) 
+	if (!(firstGame) && (boardRandom)) 
 	{ 
 		gameBoard.resetBoard(); 
 		playerA.resetPlayer();
@@ -419,7 +451,7 @@ void gameManager::prepareForGame(void)
 	playerB.saveStartingPosition();
 	setTextColor(BLACK, BLACK);
 	clearScreen();
-	if (!quite) { gameBoard.printBoard(); }
+	gameBoard.printBoard(); 
 	printPlayersScore();
 	firstGame = false;
 }

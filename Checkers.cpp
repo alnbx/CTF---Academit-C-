@@ -118,10 +118,10 @@ Return value:			None
 Description:			The function sets the current square to the previous state - before any checker waked on the square.
 Dinamically allocated:	None
 ********************************************************************************************************************************/
-void checker::erase(checker **& gameBoard)
+void checker::erase(checker **& gameBoard, bool quite)
 {
 	gameBoard[row][col].setCheckerType(walkedOn);
-	eraseDraw();
+	if (!quite) { eraseDraw(); }
 }
 
 /********************************************************************************************************************************
@@ -130,12 +130,12 @@ Return value:			None
 Description:			The function sets the current square with the new checker.
 Dinamically allocated:	None
 ********************************************************************************************************************************/
-void checker::putCheckerInNewLocation(checker **& gameBoard, types typeToPut)
+void checker::putCheckerInNewLocation(checker **& gameBoard, types typeToPut, bool quite)
 {
 	walkedOn = gameBoard[row][col].getType();
 	gameBoard[row][col] = *this;
 	gameBoard[row][col].setCheckerType(typeToPut);
-	draw(typeToPut, YELLOW);
+	if (!quite) { draw(typeToPut, YELLOW); }
 }
 
 /********************************************************************************************************************************
@@ -182,19 +182,22 @@ Return value:			None
 Description:			The function stops the current checker and removes the background color.
 Dinamically allocated:	None
 ********************************************************************************************************************************/
-void checker::stopChecker(int backroundColor)
+void checker::stopChecker(int backroundColor, bool quite)
 {
 	setDirection(Diraction::STOP);
-	gotoxyAux(col, row);
-	if ((checkerType == CHECK1) || (checkerType == CHECK2) || (checkerType == CHECK3))
+	if (!quite)
 	{
-		setTextColor(DARK_CYAN, backroundColor);
-		std::cout << " " << checkerType << "  ";
-	}
-	else
-	{
-		setTextColor(RED, backroundColor);
-		std::cout << " " << checkerType << "  ";
+		gotoxyAux(col, row);
+		if ((checkerType == CHECK1) || (checkerType == CHECK2) || (checkerType == CHECK3))
+		{
+			setTextColor(DARK_CYAN, backroundColor);
+			std::cout << " " << checkerType << "  ";
+		}
+		else
+		{
+			setTextColor(RED, backroundColor);
+			std::cout << " " << checkerType << "  ";
+		}
 	}
 }
 
@@ -279,7 +282,7 @@ Return value:			bool
 Description:			An auxilary function to the move function.
 Dinamically allocated:	None
 ********************************************************************************************************************************/
-bool checker::moveAux(checker**& gameBoard, types winningFlag, types firstChecker, types secondChecker, types thirdChecker)
+bool checker::moveAux(checker**& gameBoard, types winningFlag, types firstChecker, types secondChecker, types thirdChecker, bool quite)
 {
 	checker *nextMove = &(gameBoard[row + moveDirRow][col + moveDirCol]);
 	types nextMoveType = nextMove->getType();
@@ -289,18 +292,18 @@ bool checker::moveAux(checker**& gameBoard, types winningFlag, types firstChecke
 	{
 		if (collisionWithMyOwn(nextMoveType, firstChecker, secondChecker, thirdChecker))
 		{
-			stopChecker(YELLOW);
+			stopChecker(YELLOW, quite);
 			return false;
 		}
 
 		else if ((nextMoveType == FR) || (nextMoveType == SEA))
 		{
-			if ((checkForestOrSea(nextMoveType))) { stopChecker(YELLOW); return false; }
+			if ((checkForestOrSea(nextMoveType))) { stopChecker(YELLOW, quite); return false; }
 		}
 
 		else if ((nextMoveType == FlgA) || (nextMoveType == FlgB))
 		{
-			if (!checkWinning(nextMoveType, winningFlag)) { stopChecker(YELLOW); return false; }
+			if (!checkWinning(nextMoveType, winningFlag)) { stopChecker(YELLOW, quite); return false; }
 	
 			return true;
 		}
@@ -308,13 +311,13 @@ bool checker::moveAux(checker**& gameBoard, types winningFlag, types firstChecke
 		else
 		{
 			battleOpponent(this, nextMove);
-			if (checkerType == BLANK) { stopChecker(BLACK); erase(gameBoard); return false; }
+			if (checkerType == BLANK) { stopChecker(BLACK, quite); erase(gameBoard, quite); return false; }
 		}
 	}
-	erase(gameBoard);
+	erase(gameBoard, quite);
 	row = row + moveDirRow;
 	col = col + moveDirCol;
-	putCheckerInNewLocation(gameBoard, myCurrentType);
+	putCheckerInNewLocation(gameBoard, myCurrentType, quite);
 
 	return false;
 }
@@ -325,16 +328,16 @@ Return value:			bool
 Description:			The function moves the checker to the desired place. Returns true if the next step is the desired flag.
 Dinamically allocated:	None
 ********************************************************************************************************************************/
-bool checker::move(checker**& gameBoard, types winningFlag, types firstChecker, types secondChecker, types thirdChecker)
+bool checker::move(checker**& gameBoard, types winningFlag, types firstChecker, types secondChecker, types thirdChecker, bool quite)
 {
 	if (!(checkBoardLimits()))
 	{
-		stopChecker(YELLOW);
+		stopChecker(YELLOW, quite);
 		return false;
 	}
 
 	else
-		return moveAux(gameBoard, winningFlag, firstChecker, secondChecker, thirdChecker);
+		return moveAux(gameBoard, winningFlag, firstChecker, secondChecker, thirdChecker, quite);
 }
 
 /********************************************************************************************************************************
