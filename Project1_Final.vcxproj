@@ -114,6 +114,7 @@
     <ClCompile Include="board.cpp" />
     <ClCompile Include="Checkers.cpp" />
     <ClCompile Include="directoryHandle.cpp" />
+    <ClCompile Include="Errors.cpp" />
     <ClCompile Include="gameManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="player.cpp" />
@@ -128,6 +129,7 @@
     <ClInclude Include="defs.h" />
     <ClInclude Include="directoryHandle.h" />
     <ClInclude Include="gameManager.h" />
+    <ClInclude Include="Errors.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="primaryMenu.h" />
     <ClInclude Include="secondaryMenu.h" />

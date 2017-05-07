@@ -153,10 +153,10 @@ void gameManager::playWithFiles(std::ifstream& playerAfile, std::ifstream& playe
 	bool checkIfFileAOpen = playerAfile.is_open();
 	bool checkIfFileBOpen = playerBfile.is_open();
 
-	while (true)
+	while (true) // add the stopping condition - if the two files reached to EOF - break the loop.
 	{
 		Sleep(delay);
-
+		
 		if ((((i++) % 2) == 0) && checkIfFileAOpen)
 		{
 			if (playerA.readMovesFormTextFile(gameBoard.getBoard(), playerAfile)) { playerA.addToScore(); break; }

@@ -5,6 +5,7 @@
 
 #include "Checkers.h"
 #include "defs.h"
+#include "Errors.h"
 
 bool isChecker(types check);
 void drawWithColor(types type, int backroundColor);
@@ -20,6 +21,7 @@ class board
 	checker**				 gameBoard = new checker*[_boardSize + INITIAL_POINT];
 	std::vector<std::string> Boardfiles = {};
 	std::string				 boardName = "";
+	Errors					 BoardErrors;
 
 public:
 	board(bool filesBoard = false, int boardSize = SIZE) : _boardSize(boardSize), _filesBoard(filesBoard)
@@ -52,10 +54,11 @@ private:
 	void createBoard(void);
 	void emptyBoard(checker**& gameBoard);
 	void fillWithBlanks(int row, int colsSoFar);
-	void messageErrorPlayers(const char *fileName, bool legalAmountPlayerA, bool legalAmountPlayerB);
+	void messageErrorPlayers(const char *fileName, bool legalAmountPlayerA, bool legalAmountPlayerB, bool creationOfBoard);
 	void updatePlayerIfNeeded(types checkerType, int row, int col, player& playerA, player& playerB);
 	void drawBoardLine(int row);
 	void drawLineSeperators(void);
+	void printErrorsOfBoard(void);
 	char letterOfType(types checkerType);
 	bool createBoardFromFile(std::ifstream& file, player& playerA, player& playerB);
 	types determineCheckerType(char check);
