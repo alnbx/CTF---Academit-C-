@@ -40,6 +40,7 @@ public:
 	{
 		playerA.setKeys("waxd123");
 		playerB.setKeys("ijml789");
+		setDefaultPath();
 	}
 
 	void manageGame(int argc, char** argv);
@@ -57,6 +58,7 @@ public:
 	bool isGameRecording(void) const { return recordGame; }
 
 private:
+	void setDefaultPath(void);
 	void setPlayersAbilityToMove(void);
 	void prepareForGame(void);
 	void connectSecondaryMenu(secondaryMenu& sm);

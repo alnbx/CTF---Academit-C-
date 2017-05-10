@@ -298,7 +298,7 @@ checker* board::randomisePlayerChecker(types checkerToRandom)
 	char row = 0;
 	std::srand(std::time(0));
 
-	if (checkerToRandom > CHECK3) { offset = 8; };
+	if (checkerToRandom > FlgA) { offset = 8; };
 
 	while (true)
 	{

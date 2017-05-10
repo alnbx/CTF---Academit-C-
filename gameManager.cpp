@@ -3,6 +3,7 @@
 #include <conio.h>
 #include <time.h>
 #include <cstdlib>
+#include <direct.h>
 
 #include "gameManager.h"
 #include "secondaryMenu.h"
@@ -132,18 +133,33 @@ static void printEqualSigns(int len)
 	std::cout << "|" << std::endl;
 }
 
+static void printClosingFrame(int maxLen, int printedSoFar)
+{
+	int spacesToPrint = maxLen - printedSoFar - 1;
+	int i = 0;
+
+	for (; i < spacesToPrint; i++) { std::cout << ' '; };
+	std::cout << '|' << std::endl;
+}
+
 void gameManager::printFinish(std::string& playerAName, std::string& playerBName, int maxLen)
 {
-	int startPrintingRow = 12, startPrintingCol = 48;
+	int startPrintingRow = 12;
+	int startPrintingCol = 48;
+	std::string gameSummaryStr = "Game Summary";
+
+	//TODO: finish to handle the frame
 	clearScreen();
 	gotoxy(startPrintingCol, startPrintingRow++);
 	setTextColor(WHITE, BLACK);
 	std::cout << "|";
 	printEqualSigns(maxLen);
 	gotoxy(startPrintingCol, startPrintingRow++);
-	std::cout << "| Game Summary |" << std::endl;
+	std::cout << "| " << gameSummaryStr; 
+	printClosingFrame(maxLen, gameSummaryStr.length());
 	gotoxy(startPrintingCol, startPrintingRow++);
-	std::cout << "| " << playerAName << " " << playerA.getScore() << " |" << std::endl;
+	std::cout << "| " << playerAName << " " << playerA.getScore();
+	printClosingFrame(maxLen, playerAName.length() + 3);
 	gotoxy(startPrintingCol, startPrintingRow++);
 	std::cout << "| " << playerBName << " " << playerB.getScore() << " |" << std::endl;
 	gotoxy(startPrintingCol, startPrintingRow);
@@ -194,7 +210,6 @@ void gameManager::playWithFiles(std::ifstream& playerAfile, std::ifstream& playe
 
 void gameManager::runGameWithFiles(void)
 {
-	int numberOfMoves;
 	int fileAsize = playerAFiles.size();
 	int fileBsize = playerBFiles.size();
 	int boardsCounter = boardFiles.size();
@@ -221,7 +236,7 @@ void gameManager::finishTheGame(void)
 {
 	std::string playerAName = playerA.getName();
 	std::string playerBName = playerB.getName();
-	int maxLen = max(14, max(playerAName.length(), playerBName.length()));
+	int maxLen = (max(14, max(playerAName.length(), playerBName.length())) + 3);
 
 	//if (runFromFiles)	{ printFinish(playerAName, playerBName, maxLen); }
 	printFinish(playerAName, playerBName, maxLen);
@@ -341,7 +356,7 @@ void gameManager::takeUserParams(int argc, char ** argv)
 		key = argv[i];
 
 		if (!key.compare("-quite")) { value = "t"; }
-		else					   { value = argv[++i]; }
+		else					    { value = argv[++i]; }
 
 		turnOnFlags(key, value);
 	}
@@ -349,7 +364,7 @@ void gameManager::takeUserParams(int argc, char ** argv)
 
 static unsigned int stringToNumber(std::string str)
 {
-	int i = 0;
+	unsigned int i = 0;
 	unsigned int result = 0;
 
 	for (; i < (unsigned int)str.size(); i++)
@@ -429,8 +444,15 @@ void gameManager::ransomiseCheckers(void)
 	playerB.setCheckers(CHECK7, gameBoard.randomisePlayerChecker(CHECK7));
 	playerB.setCheckers(CHECK8, gameBoard.randomisePlayerChecker(CHECK8));
 	playerB.setCheckers(CHECK9, gameBoard.randomisePlayerChecker(CHECK9));
-	//playerA.setCheckers(gameBoard.randomisePlayerChecker(CHECK1), gameBoard.randomisePlayerChecker(CHECK2), gameBoard.randomisePlayerChecker(CHECK3));
-	//playerB.setCheckers(gameBoard.randomisePlayerChecker(CHECK7), gameBoard.randomisePlayerChecker(CHECK8), gameBoard.randomisePlayerChecker(CHECK9));
+	gameBoard.randomisePlayerChecker(FlgA);
+	gameBoard.randomisePlayerChecker(FlgB);
+}
+
+void gameManager::setDefaultPath(void)
+{
+	char *buffer = NULL;
+
+	dirPath = _getcwd(buffer, _MAX_PATH);
 }
 
 /********************************************************************************************************************************
