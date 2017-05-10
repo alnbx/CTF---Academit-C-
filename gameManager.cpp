@@ -134,21 +134,41 @@ static void printEqualSigns(int len)
 
 void gameManager::printFinish(std::string& playerAName, std::string& playerBName, int maxLen)
 {
+	int startPrintingRow = 12, startPrintingCol = 48;
 	clearScreen();
-	gotoxy(0, 0);//middle, middle);
+	gotoxy(startPrintingCol, startPrintingRow++);
 	setTextColor(WHITE, BLACK);
 	std::cout << "|";
 	printEqualSigns(maxLen);
+	gotoxy(startPrintingCol, startPrintingRow++);
 	std::cout << "| Game Summary |" << std::endl;
+	gotoxy(startPrintingCol, startPrintingRow++);
 	std::cout << "| " << playerAName << " " << playerA.getScore() << " |" << std::endl;
+	gotoxy(startPrintingCol, startPrintingRow++);
 	std::cout << "| " << playerBName << " " << playerB.getScore() << " |" << std::endl;
+	gotoxy(startPrintingCol, startPrintingRow);
 	std::cout << "|";
 	printEqualSigns(maxLen);
 	Sleep(delay * 10);
 }
 
+void gameManager::quiteModeSummery(int numberOfMoves, const std::string& winnerName)
+{
+	int startPrintingRow = 12, startPrintingCol = 48;
+	clearScreen();
+	gotoxy(startPrintingCol, startPrintingRow++);
+	setTextColor(WHITE, BLACK);
+	std::cout << "Game cycle: " << round << std::endl;
+	gotoxy(startPrintingCol, startPrintingRow++);
+	std::cout << "Num moves: " << numberOfMoves << std::endl;
+	gotoxy(startPrintingCol, startPrintingRow);
+	std::cout << "Winner: " << winnerName << std::endl;
+}
+
 void gameManager::playWithFiles(std::ifstream& playerAfile, std::ifstream& playerBfile)
 {
+	int numberOfMoves = 0;
+	std::string winnerName;
 	time_t i = time(NULL);
 	bool checkIfFileAOpen = playerAfile.good();
 	bool checkIfFileBOpen = playerBfile.good();
@@ -159,39 +179,41 @@ void gameManager::playWithFiles(std::ifstream& playerAfile, std::ifstream& playe
 		
 		if ((((i++) % 2) == 0) && checkIfFileAOpen)
 		{
-			if (playerA.readMovesFormTextFile(gameBoard.getBoard(), playerAfile, quite)) { playerA.addToScore(quite); break; }
+			if (playerA.readMovesFormTextFile(gameBoard.getBoard(), playerAfile, quite)) { playerA.addToScore(quite); winnerName = playerA.getName(); break; }
 		}
 		else if (checkIfFileBOpen)
 		{
-			if (playerB.readMovesFormTextFile(gameBoard.getBoard(), playerBfile, quite)) { playerB.addToScore(quite); break; }
+			if (playerB.readMovesFormTextFile(gameBoard.getBoard(), playerBfile, quite)) { playerB.addToScore(quite); winnerName = playerB.getName(); break; }
 		}
-
-		if (playerA.areAllDead()) { playerB.addToScore(quite); break; }
-		else if (playerB.areAllDead()) { playerA.addToScore(quite); break; }
+		numberOfMoves++;
+		if (playerA.areAllDead()) { playerB.addToScore(quite); winnerName = playerB.getName(); break; }
+		else if (playerB.areAllDead()) { playerA.addToScore(quite); winnerName = playerA.getName(); break; }
 	}
+	if (quite) { quiteModeSummery(numberOfMoves, winnerName); }
 }
 
 void gameManager::runGameWithFiles(void)
 {
+	int numberOfMoves;
 	int fileAsize = playerAFiles.size();
 	int fileBsize = playerBFiles.size();
 	int boardsCounter = boardFiles.size();
 	int roundsNum = min(boardsCounter, max(fileAsize, fileBsize));
-	int index = 0;
 	std::ifstream playerAfile;
 	std::ifstream playerBfile;
 
-	for (; (index < roundsNum); ++index)
+	for (; (round < roundsNum); ++round)
 	{
-		if ((fileAsize - index) > 0) { playerAfile.open(playerAFiles[index].c_str()); }
-		if ((fileBsize - index) > 0) { playerBfile.open(playerBFiles[index].c_str()); }
+		if ((fileAsize - round) > 0) { playerAfile.open(playerAFiles[round].c_str()); }
+		if ((fileBsize - round) > 0) { playerBfile.open(playerBFiles[round].c_str()); }
 
-		gameBoard.loadBoardFromTextFile(boardFiles[index].c_str(), playerA, playerB);
+		gameBoard.loadBoardFromTextFile(boardFiles[round].c_str(), playerA, playerB);
 		if (!quite) { gameBoard.printBoard(); }
 		playWithFiles(playerAfile, playerBfile);
 
 		if (playerAfile.is_open()) { playerAfile.close(); }
 		if (playerBfile.is_open()) { playerBfile.close(); }
+		Sleep(50 * delay);
 	}
 }
 
