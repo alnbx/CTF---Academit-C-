@@ -30,7 +30,7 @@ public:
 			gameBoard[i] = new checker[_boardSize +INITIAL_POINT];
 
 		emptyBoard(gameBoard);
-		if (_filesBoard) { createBoard(); }
+		if (!(_filesBoard)) { createBoard(); }
 	}
 
 	~board()
@@ -48,7 +48,8 @@ public:
 	void resetBoard(void);
 	void clearBoard(void);
 	void emptyCheckLegalChecker(void);
-	void saveBoardToFile(const char* fileName);
+	void saveBoardToFile(const char *path, const char* fileName);
+	void setBoardName(const std::string& _boardName) { boardName = _boardName; }
 	const char* getBoardName(void) const { return boardName.c_str(); }
 
 private:

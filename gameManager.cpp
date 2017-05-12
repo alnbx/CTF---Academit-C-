@@ -38,9 +38,11 @@ void gameManager::connectSecondaryMenu(secondaryMenu& sm)
 }
 
 
-std::ofstream openFileToWrite(const char *fileName, char * extantion)
+std::ofstream openFileToWrite(const char* dirPath, const char *fileName, char * extantion)
 {
-	std::string tmpFileName = fileName;
+	std::string tmpFileName = dirPath;
+	tmpFileName.append("\\");
+	tmpFileName.append(fileName);
 	tmpFileName.append(extantion);
 
 	std::ofstream myFile(tmpFileName.c_str());
@@ -56,9 +58,6 @@ Dinamically allocated:	None
 ********************************************************************************************************************************/
 void gameManager::run()
 {
-	std::ofstream playerAMovesFile;
-	std::ofstream playerBMovesFile;
-	
 	round++;
 	prepareForGame();
 	if (recordGame)
@@ -66,32 +65,30 @@ void gameManager::run()
 		if (boardRandom)
 		{
 			std::string boardFileName = "random_" + std::to_string(round);
-			gameBoard.saveBoardToFile(boardFileName.c_str());
-
-			playerAMovesFile = openFileToWrite(boardFileName.c_str(), ".moves-a_full");
-			playerBMovesFile = openFileToWrite(boardFileName.c_str(), ".moves-b_full");
+			gameBoard.setBoardName(boardFileName);
+			gameBoard.saveBoardToFile(dirPath.c_str(), boardFileName.c_str());
 		}
 
-		else
-		{
-			playerAMovesFile = openFileToWrite(gameBoard.getBoardName(), ".moves-a_full");
-			playerBMovesFile = openFileToWrite(gameBoard.getBoardName(), ".moves-b_full");
-		}
+		playerA.setFile() = openFileToWrite(dirPath.c_str(),gameBoard.getBoardName(), ".moves-a_full");
+		playerB.setFile() = openFileToWrite(dirPath.c_str(),gameBoard.getBoardName(), ".moves-b_full");
 	}
 
-	playKeboard(playerAMovesFile, playerBMovesFile);
+	playKeboard();
 
 	if (recordGame)
 	{
-		playerAMovesFile.close();
-		playerBMovesFile.close();
+		playerA.setFile().close();
+		playerB.setFile().close();
 	}
 }
 
-void gameManager::playKeboard(std::ofstream& playerAMovesFile, std::ofstream& playerBMovesFile)
+void gameManager::playKeboard()
 {
+	std::ofstream& playerAMovesFile = playerA.setFile();
+	std::ofstream& playerBMovesFile = playerB.setFile();
 	char			choice;
 	bool			breakGame = false;
+	bool			clearFiles = false;
 	time_t			i = time(NULL);
 	checker**&		myGameBoard = gameBoard.getBoard();
 	secondaryMenu	sm;
@@ -249,9 +246,9 @@ void gameManager::keyboardGame()
 
 	while (!(endGame))
 	{
-		if (numberOfFileBoards > round)
+		if (!(boardRandom))
 		{
-			if (!(boardRandom))
+			if (numberOfFileBoards > round)
 			{
 				if (!firstGame)
 				{
@@ -261,13 +258,15 @@ void gameManager::keyboardGame()
 				}
 
 				gameBoard.loadBoardFromTextFile(boardFiles[round].c_str(), playerA, playerB);
+				_primarymenu.printMenuAndTakeUserChoice(this, endGame);
 			}
-			_primarymenu.printMenuAndTakeUserChoice(this, endGame);
+			else
+				endGame = true;
 		}
 		else
-			endGame = true;
+			_primarymenu.printMenuAndTakeUserChoice(this, endGame);
+
 	}
-	finishTheGame();
 }
 
 /********************************************************************************************************************************
@@ -415,7 +414,7 @@ Dinamically allocated:	None
 void gameManager::restartGame(void)
 {
 	gameRestarted = true;
-
+	if (recordGame) { clearFiles(); }
 	checker **&myGameBoard = gameBoard.getBoard();
 	checker** currCheckerA = playerA.findCurrentChecker();
 	checker** currCheckerB = playerB.findCurrentChecker();
@@ -446,6 +445,12 @@ void gameManager::ransomiseCheckers(void)
 	playerB.setCheckers(CHECK9, gameBoard.randomisePlayerChecker(CHECK9));
 	gameBoard.randomisePlayerChecker(FlgA);
 	gameBoard.randomisePlayerChecker(FlgB);
+}
+
+void gameManager::clearFiles(void)
+{
+	playerA.setFile().clear();
+	playerB.setFile().clear();
 }
 
 void gameManager::setDefaultPath(void)

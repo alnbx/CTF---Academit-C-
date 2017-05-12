@@ -12,7 +12,7 @@
 class primaryMenu;
 class secondaryMenu;
 
-std::ofstream openFileToWrite(const char * fileName, char * extantion);
+std::ofstream openFileToWrite(const char* dirPath, const char * fileName, char * extantion);
 
 class gameManager
 {
@@ -56,6 +56,7 @@ public:
 	}
 	void setReverseScore(bool reverse) { flipScore = reverse; }
 	bool isGameRecording(void) const { return recordGame; }
+	void clearFiles(void);
 
 private:
 	void setDefaultPath(void);
@@ -68,7 +69,7 @@ private:
 	void determineBoardType(std::string value) { if (value[0] == 'f') { boardRandom = false; } }
 	void determineMovesType(std::string value) { if (value[0] == 'f') { movesKeyboard = false; } }
 	void openDirectory(void);
-	void playKeboard(std::ofstream& playerAMovesFile, std::ofstream& playerBMovesFile);
+	void playKeboard();
 	void finishTheGame(void);
 	void keyboardGame();
 	void printFinish(std::string& playerAName, std::string& playerBName, int maxLen);

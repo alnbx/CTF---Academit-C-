@@ -19,9 +19,9 @@ public:
 	}
 
 
-	void printMenuAndTakeUserChoice(gameManager* manager, bool endGame);
+	void printMenuAndTakeUserChoice(gameManager* manager, bool &endGame);
 
 private:
-	void handleUserChoice(gameManager* manager, bool endGame);
+	void handleUserChoice(gameManager* manager, bool &endGame);
 	void printMenu(gameManager *manager);
 };

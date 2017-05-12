@@ -31,7 +31,7 @@ Return value:			None
 Description:			The function takes and handles the user's choice.
 Dinamically allocated:	None
 ********************************************************************************************************************************/
-void primaryMenu::printMenuAndTakeUserChoice(gameManager *manager, bool endGame)
+void primaryMenu::printMenuAndTakeUserChoice(gameManager *manager, bool &endGame)
 {
 	unsigned char userChose = 0;
 	printMenu(manager);
@@ -47,7 +47,7 @@ Return value:			None
 Description:			The function handles the user's choice and sets the desired action.
 Dinamically allocated:	None
 ********************************************************************************************************************************/
-void primaryMenu::handleUserChoice(gameManager *manager, bool endGame)
+void primaryMenu::handleUserChoice(gameManager *manager, bool &endGame)
 {
 	unsigned char userChose = 0;
 	bool loopCheck = true;

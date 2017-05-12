@@ -468,9 +468,9 @@ char board::letterOfType(types checkerType)
 		return ((char)((int)checkerType + '0'));
 }
 
-void board::saveBoardToFile(const char * fileName)
+void board::saveBoardToFile(const char *path, const char * fileName)
 {
-	std::ofstream boardFile = openFileToWrite(fileName, ".gboard");
+	std::ofstream boardFile = openFileToWrite(path,fileName, ".gboard");
 
 	for (int i = INITIAL_POINT; i < _boardSize + INITIAL_POINT; i++)
 	{
@@ -496,7 +496,7 @@ Dinamically allocated:	None
 ********************************************************************************************************************************/
 void board::createBoard(void)
 {
-	setFlags(gameBoard);
+	//setFlags(gameBoard);
 	setForest(gameBoard);
 	setSea(gameBoard);
 }
