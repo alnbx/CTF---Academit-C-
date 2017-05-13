@@ -209,29 +209,83 @@ static void printClosingFrame(int maxLen, int printedSoFar)
 	std::cout << '|' << std::endl;
 }
 
+static void printSpaces(int size)
+{
+	int i = 0;
+
+	for (; i < size; i++) { std::cout << " "; }
+}
+
+static int calcDigits(int score)
+{
+	int digits = 0;
+
+	while (score > 0)
+	{
+		digits++;
+		score /= 10;
+	}
+
+	return digits;
+}
+
+static void printSummaryHead(int& startPrintingCol, int &startPrintingRow, int maxLen)
+{
+	std::string gameSummaryStr = "Game Summary";
+	int spacesToPrint = 0;
+	int midSpace = 0;
+
+	clearScreen();
+	gotoxy(startPrintingCol, startPrintingRow++);
+	setTextColor(BLACK, WHITE);
+	std::cout << "|";
+	printEqualSigns(maxLen);
+	gotoxy(startPrintingCol, startPrintingRow++);
+	spacesToPrint = (maxLen - gameSummaryStr.length());
+	midSpace = spacesToPrint / 2;
+	std::cout << "|";
+	printSpaces(midSpace);
+	std::cout << gameSummaryStr;
+	printSpaces(spacesToPrint - midSpace);
+	std::cout << "|";
+}
+
+static void printPlayerSummary(int& startPrintingCol, int &startPrintingRow, int maxLen, const char *name, int score)
+{
+	int digits = 0;
+	int spacesToPrint = 0;
+	int midSpace = 0;
+
+	gotoxy(startPrintingCol, startPrintingRow++);
+	setTextColor(BLACK, WHITE);
+	std::cout << "|";
+	digits = calcDigits(score);
+	spacesToPrint = maxLen - strlen(name) - 3 - digits;
+	midSpace = spacesToPrint / 2;
+	printSpaces(midSpace);
+	std::cout << name << " ";
+	printSpaces(3 - digits);
+	std::cout << score;
+	printSpaces(spacesToPrint - midSpace - 2);
+	std::cout << "|";
+}
+
 void gameManager::printFinish(std::string& playerAName, std::string& playerBName, int maxLen)
 {
 	int startPrintingRow = 12;
 	int startPrintingCol = 48;
-	std::string gameSummaryStr = "Game Summary";
+	int spacesToPrint = 0;
+	int midSpace = 0;
+	int digits = 0;
 
-	//TODO: finish to handle the frame
-	clearScreen();
-	gotoxy(startPrintingCol, startPrintingRow++);
-	setTextColor(WHITE, BLACK);
-	std::cout << "|";
-	printEqualSigns(maxLen);
-	gotoxy(startPrintingCol, startPrintingRow++);
-	std::cout << "| " << gameSummaryStr; 
-	printClosingFrame(maxLen, gameSummaryStr.length());
-	gotoxy(startPrintingCol, startPrintingRow++);
-	std::cout << "| " << playerAName << " " << playerA.getScore();
-	printClosingFrame(maxLen, playerAName.length() + 3);
-	gotoxy(startPrintingCol, startPrintingRow++);
-	std::cout << "| " << playerBName << " " << playerB.getScore() << " |" << std::endl;
+	printSummaryHead(startPrintingCol, startPrintingRow, maxLen);
+	printPlayerSummary(startPrintingCol, startPrintingRow, maxLen, playerAName.c_str(), playerA.getScore());
+	printPlayerSummary(startPrintingCol, startPrintingRow, maxLen, playerBName.c_str(), playerB.getScore());
+
 	gotoxy(startPrintingCol, startPrintingRow);
 	std::cout << "|";
 	printEqualSigns(maxLen);
+	std::cout << "|";
 	Sleep(delay * 10);
 }
 
