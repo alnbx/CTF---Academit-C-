@@ -22,6 +22,7 @@ class player
 	int						 numberOfCheckersLive = CHECKER_NUMBER;
 	checker					 startingPosition[3];
 	std::vector<std::string> movingFiles = {};
+	std::ofstream			 movesFile;
 
 public:
 	player(std::string& playerName, types flag) : 
@@ -49,7 +50,7 @@ public:
 		startingPosition[1] = *secondChecker; 
 		startingPosition[2] = *thirdChecker; 
 	};
-	checker* getStartingPosition() { return startingPosition; }
+	checker* getStartingPosition(void) { return startingPosition; }
 	void resetPlayer(void);
 	void setCheckers(types checkerNum, checker *checkerToSet);
 	/*
@@ -65,6 +66,7 @@ public:
 	std::string getName(void) { return name; }
 	checker** findCurrentChecker(void);
 	bool readMovesFormTextFile(checker**& board, std::ifstream &movesFile, bool quite);
+	std::ofstream& setFile() { return movesFile; };
 
 private:
 	bool moveFromFile(checker**& board, int keys[], bool quite);

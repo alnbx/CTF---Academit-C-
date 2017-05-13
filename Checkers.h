@@ -30,7 +30,7 @@ public:
 	bool move(checker**& gameBoard, types winningFlag, types firstChecker, types secondChecker, types thirdChecker, bool quite);
 	void setCheckerType(types typeToSet) { checkerType = typeToSet; };
 	void setPosition(int colToSet, int rowToSet) { col = colToSet; row = rowToSet; };
-	types getType(void) { return checkerType; };
+	types getType(void) const { return checkerType; };
 	void setDirection(Diraction dir);
 	void setMoveSea(bool canMove) { canMoveSea = canMove; }
 	void setMoveForest(bool canMove) { canMoveForest = canMove; }

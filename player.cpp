@@ -207,18 +207,17 @@ bool player::readMovesFormTextFile(checker**& board,std::ifstream &movesFile, bo
 		int keys[SINGLE_MOVE];
 		char key = movesFile.get();
 
-		while (!(isCheckerKey(key)))
-			key = movesFile.get();
+		if ((key == '\n') || (key == -1)) { return false; }
+
+		while (!(isCheckerKey(key))) { key = movesFile.get(); }
 
 		keys[TOOL] = (key - '1' + INITIAL_POINT);
 
-		while (!(key >= 'A' && key <= 'M'))
-			key = movesFile.get();
+		while (!(key >= 'A' && key <= 'M')) { key = movesFile.get(); }
 
 		keys[COL] = (key - 'A' + INITIAL_POINT);
 
-		while (!(key >= '0' && key <= '9'))
-			key = movesFile.get();
+		while (!(key >= '0' && key <= '9')) { key = movesFile.get(); }
 
 		keys[ROW] = (key - '1' + INITIAL_POINT);
 
@@ -245,15 +244,13 @@ bool player::isCheckerKey(char key)
 {
 	types check = (types)(key - '0');
 
-	return (isChecker(check));
+	//return (isChecker(check));
 
-	/*
 	int i = 0;
 
 	for (; i < CHECKER_NUMBER; i++)	{ if (check == (gameKeys[KEYS_NUMBER - CHECKER_NUMBER + i] - '0')) { return true; } }
 
 	return false;
-	*/
 }
 
 /********************************************************************************************************************************

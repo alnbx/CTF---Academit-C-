@@ -60,9 +60,9 @@ private:
 	void updatePlayerIfNeeded(types checkerType, int row, int col, player& playerA, player& playerB);
 	void drawBoardLine(int row);
 	void drawLineSeperators(void);
-	void printErrorsOfBoard(void);
+	void printErrorsOfBoard(const char *fileName) { BoardErrors.printErrors(fileName); }
 	char letterOfType(types checkerType);
-	bool createBoardFromFile(std::ifstream& file, player& playerA, player& playerB);
+	bool createBoardFromFile(const char* fileName, std::ifstream& file, player& playerA, player& playerB);
 	types determineCheckerType(char check);
 	bool checkLegalLine(char *line);
 	bool checkLegalChar(char let);

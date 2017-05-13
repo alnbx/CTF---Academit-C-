@@ -67,14 +67,17 @@ private:
 	void takeUserParams(int argc, char** argv);
 	void turnOnFlags(std::string key, std::string value);
 	void determineBoardType(std::string value) { if (value[0] == 'f') { boardRandom = false; } }
-	void determineMovesType(std::string value) { if (value[0] == 'f') { movesKeyboard = false; } }
+	void determineMovesType(std::string value) { if (value[0] == 'f') { movesKeyboard = false; runFromFiles = true; } }
 	void openDirectory(void);
 	void playKeboard();
 	void finishTheGame(void);
 	void keyboardGame();
+	void gameManager::setGameLogic(void);
 	void printFinish(std::string& playerAName, std::string& playerBName, int maxLen);
 	void quiteModeSummery(int numberOfMoves,const std::string & winnerName);
 	void playWithFiles(std::ifstream & playerAfile, std::ifstream& playerBfile);
+	std::string cutEnding(const std::string& fileName);
+	bool compareFilesName(int & pAFileIndex, int & boardFileIndex, std::vector<std::string>& playerFiles);
 	void runGameWithFiles(void);
 	bool checkIfQuiteIsPossibe(void)
 	{

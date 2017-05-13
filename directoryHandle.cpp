@@ -43,7 +43,7 @@ void directoryHandeling::openDir(std::string& dirPath)
 
 void directoryHandeling::devideToPlayersAndBoard(void)
 {
-	int index = 0; 
+	size_t index = 0; 
 	size_t extentionStarts = 0;
 	std::string extention = "";
 

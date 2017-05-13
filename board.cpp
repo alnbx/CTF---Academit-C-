@@ -64,13 +64,13 @@ Return value:			bool
 Description:			The function reads from a file and builds a board accordingly. returns false if the input is illegal.
 Dinamically allocated:	lineOfBoard(char *)
 ********************************************************************************************************************************/
-bool board::createBoardFromFile(std::ifstream& file, player& playerA, player& playerB)
+bool board::createBoardFromFile(const char* fileName, std::ifstream& file, player& playerA, player& playerB)
 {
 	int countRow = INITIAL_POINT;
 	int countCol = INITIAL_POINT;
 	std::string lineOfBoard;
 	types typeOfChecker;
-
+	BoardErrors.emptyErrors();
 	emptyCheckLegalChecker();
 
 	while (countRow < _boardSize + INITIAL_POINT)
@@ -86,13 +86,13 @@ bool board::createBoardFromFile(std::ifstream& file, player& playerA, player& pl
 				gameBoard[countRow][countCol].setCheckerType(typeOfChecker);
 				updatePlayerIfNeeded(gameBoard[countRow][countCol].getType(), countRow, countCol, playerA, playerB);
 				checkLegalChecker[typeOfChecker]++;
-				countCol++;
 			}
+			countCol++;
 		}
 		countRow++;
 		countCol = INITIAL_POINT;
 	}
-
+	if (BoardErrors.isErrorExists()) { return false; }
 	return true;
 }
 
@@ -166,11 +166,6 @@ void board::fillWithBlanks(int row, int colsSoFar)
 		gameBoard[row][colsSoFar].setCheckerType(BLANK);
 }
 
-void board::printErrorsOfBoard(void)
-{
-
-}
-
 /********************************************************************************************************************************
 Function Name:			messageAnError
 Return value:			None
@@ -186,7 +181,7 @@ void board::messageErrorPlayers(const char *fileName, bool legalAmountPlayerA, b
 		std::cout << "Wrong settings for player B tools in file " << fileName << std::endl;
 
 	if (!creationOfBoard)
-		printErrorsOfBoard();
+		printErrorsOfBoard(fileName);
 }
 
 void board::updatePlayerIfNeeded(types checkerType, int row, int col, player & playerA, player & playerB)
@@ -327,11 +322,10 @@ bool board::loadBoardFromTextFile(const char *fileName, player& playerA, player&
 	bool legalAmountPlayerA = false;
 	bool legalAmountPlayerB = false;
 
-
 	std::ifstream file = openfileForReading(fileName);
 	if (!(file.is_open())) { std::cout << "Could not open " << fileName << std::endl; exit(-2); return false; } // TODO: exit with no exit
 	
-	creationOfBoard = createBoardFromFile(file, playerA, playerB);
+	creationOfBoard = createBoardFromFile(fileName, file, playerA, playerB);
 	//printBoard();
 	legalAmountPlayerA = checkLegalAmountOfCheckers((int)CHECK1);
 	legalAmountPlayerB = checkLegalAmountOfCheckers((int)CHECK7);
@@ -341,7 +335,6 @@ bool board::loadBoardFromTextFile(const char *fileName, player& playerA, player&
 		messageErrorPlayers(fileName, legalAmountPlayerA, legalAmountPlayerB, creationOfBoard);
 		return false;
 	}
-
 
 	file.close();
 
@@ -420,7 +413,8 @@ void board::resetBoard(void)
 	{
 		for (col = 0; col <= _boardSize; col++)
 		{
-			if (isChecker(gameBoard[row][col].getType()))
+			types checkerType = gameBoard[row][col].getType();
+			if ((isChecker(checkerType)) || (checkerType == FlgA) || (checkerType == FlgB) )
 				gameBoard[row][col].resetChecker(_boardSize);
 		}
 	}

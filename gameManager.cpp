@@ -4,6 +4,7 @@
 #include <time.h>
 #include <cstdlib>
 #include <direct.h>
+#include <string>
 
 #include "gameManager.h"
 #include "secondaryMenu.h"
@@ -190,11 +191,11 @@ void gameManager::playWithFiles(std::ifstream& playerAfile, std::ifstream& playe
 	{
 		Sleep(delay);
 		
-		if ((((i++) % 2) == 0) && checkIfFileAOpen)
+		if ((((i++) % 2) == 0) && (checkIfFileAOpen = playerAfile.good()))
 		{
 			if (playerA.readMovesFormTextFile(gameBoard.getBoard(), playerAfile, quite)) { playerA.addToScore(quite); winnerName = playerA.getName(); break; }
 		}
-		else if (checkIfFileBOpen)
+		else if (checkIfFileBOpen = playerBfile.good())
 		{
 			if (playerB.readMovesFormTextFile(gameBoard.getBoard(), playerBfile, quite)) { playerB.addToScore(quite); winnerName = playerB.getName(); break; }
 		}
@@ -205,27 +206,60 @@ void gameManager::playWithFiles(std::ifstream& playerAfile, std::ifstream& playe
 	if (quite) { quiteModeSummery(numberOfMoves, winnerName); }
 }
 
+std::string gameManager::cutEnding(const std::string& fileName)
+{
+	std::string nameWithoutEnding;
+	size_t extentionStarts = fileName.find_last_of('.');
+
+	nameWithoutEnding = fileName;
+	nameWithoutEnding.erase(extentionStarts, (fileName.length() - extentionStarts));
+
+	return nameWithoutEnding;
+}
+
+bool gameManager::compareFilesName(int &pFileIndex, int &boardFileIndex, std::vector<std::string>& playerFiles)
+{
+	std::string playerAFile = cutEnding(playerFiles[pFileIndex]);
+	std::string boardFile = cutEnding(boardFiles[boardFileIndex]);
+
+	while (strcmp(playerAFile.c_str(), boardFile.c_str()) < 0)
+	{
+		pFileIndex++;
+		playerAFile = cutEnding(playerFiles[pFileIndex]);
+	}
+
+	if (strcmp(playerAFile.c_str(), boardFile.c_str()) == 0) { return true; }
+	
+	return false;
+}
+
 void gameManager::runGameWithFiles(void)
 {
+	int pAFileIndex = 0;
+	int pBFileIndex = 0;
+	int boardFileIndex = 0;
 	int fileAsize = playerAFiles.size();
 	int fileBsize = playerBFiles.size();
-	int boardsCounter = boardFiles.size();
-	int roundsNum = min(boardsCounter, max(fileAsize, fileBsize));
+	int boardsFileSize = boardFiles.size();
 	std::ifstream playerAfile;
 	std::ifstream playerBfile;
 
-	for (; (round < roundsNum); ++round)
+	while (((pAFileIndex < fileAsize) || (pBFileIndex < fileBsize)) && boardFileIndex < boardsFileSize)
 	{
-		if ((fileAsize - round) > 0) { playerAfile.open(playerAFiles[round].c_str()); }
-		if ((fileBsize - round) > 0) { playerBfile.open(playerBFiles[round].c_str()); }
+		if (pAFileIndex < fileAsize) { if (compareFilesName(pAFileIndex, boardFileIndex, playerAFiles)) { playerAfile.open(playerAFiles[pAFileIndex++].c_str()); } }
+		if (pBFileIndex < fileBsize) { if (compareFilesName(pBFileIndex, boardFileIndex, playerBFiles)) { playerBfile.open(playerBFiles[pBFileIndex++].c_str()); } }
 
-		gameBoard.loadBoardFromTextFile(boardFiles[round].c_str(), playerA, playerB);
-		if (!quite) { gameBoard.printBoard(); }
-		playWithFiles(playerAfile, playerBfile);
+		if (gameBoard.loadBoardFromTextFile(boardFiles[boardFileIndex].c_str(), playerA, playerB))
+		{
+			setGameLogic();
+			if (!quite) { clearScreen();  gameBoard.printBoard(); }
+			playWithFiles(playerAfile, playerBfile);
 
-		if (playerAfile.is_open()) { playerAfile.close(); }
-		if (playerBfile.is_open()) { playerBfile.close(); }
+			if (playerAfile.is_open()) { playerAfile.close(); }
+			if (playerBfile.is_open()) { playerBfile.close(); }
+		}
 		Sleep(50 * delay);
+		boardFileIndex++;
 	}
 }
 
@@ -476,6 +510,16 @@ void gameManager::setPlayersAbilityToMove(void)
 	playerB.getChecker(2)->setMoveForest(true);
 }
 
+void gameManager::setGameLogic(void)
+{
+	playerA.setPointersToCheckers();
+	playerB.setPointersToCheckers();
+	playerA.setCheckersLogic();
+	playerB.setCheckersLogic();
+	setPlayersAbilityToMove();
+	playerA.saveStartingPosition();
+	playerB.saveStartingPosition();
+}
 /********************************************************************************************************************************
 Function Name:			prepareForGame
 Return value:			None
@@ -491,13 +535,7 @@ void gameManager::prepareForGame(void)
 		playerB.resetPlayer();
 	}
 	if (boardRandom) { ransomiseCheckers(); }
-	playerA.setPointersToCheckers();
-	playerB.setPointersToCheckers();
-	playerA.setCheckersLogic();
-	playerB.setCheckersLogic();
-	setPlayersAbilityToMove();
-	playerA.saveStartingPosition();
-	playerB.saveStartingPosition();
+	setGameLogic();
 	setTextColor(BLACK, BLACK);
 	clearScreen();
 	gameBoard.printBoard(); 

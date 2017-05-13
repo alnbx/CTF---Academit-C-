@@ -68,6 +68,7 @@ bool secondaryMenu::handleUserChoice(void)
 			return false;
 
 		case (MAIN_MENU):
+			_gameManager->round--;
 			return true;
 
 		default:
