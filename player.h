@@ -17,12 +17,14 @@ class player
 	checker*				 firstChecker;
 	checker*				 secondChecker;
 	checker*				 thirdChecker;
+	checker*				 flagPosition;
 	types					 winningFlag;
 	types					 currentChecker = BLANK;
 	int						 numberOfCheckersLive = CHECKER_NUMBER;
-	checker					 startingPosition[3];
+	checker					 startingPosition[4];
 	std::vector<std::string> movingFiles = {};
 	std::ofstream			 movesFile;
+	std::string				 movesFileName;
 
 public:
 	player(std::string& playerName, types flag) : 
@@ -49,6 +51,7 @@ public:
 		startingPosition[0] = *firstChecker; 
 		startingPosition[1] = *secondChecker; 
 		startingPosition[2] = *thirdChecker; 
+		startingPosition[3] = *flagPosition;
 	};
 	checker* getStartingPosition(void) { return startingPosition; }
 	void resetPlayer(void);
@@ -62,6 +65,8 @@ public:
 		
 	}
 	*/
+	void setMovesFileName(const char* fileName) { movesFileName = fileName; }
+	void reopenMovesFile(void);
 	int getScore(void) { return score; }
 	std::string getName(void) { return name; }
 	checker** findCurrentChecker(void);

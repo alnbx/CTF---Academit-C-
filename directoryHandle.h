@@ -22,6 +22,6 @@ public:
 
 private:
 	void parseBuffedData(std::string data, std::string& dirPath);
-	void sortContent(void) const { std::sort(dirContent.begin(), dirContent.end()); }
+	void sortContent(void) { std::sort(dirContent.begin(), dirContent.end()); }
 	void devideToPlayersAndBoard(void);
 };

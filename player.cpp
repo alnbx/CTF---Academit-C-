@@ -137,10 +137,12 @@ void player::setCheckers(types checkerNum, checker *checkerToSet)
 	case (CHECK9):
 		thirdChecker = checkerToSet; break;
 
+	case (FlgA):
+	case (FlgB):
+		flagPosition = checkerToSet; break;
 	default:
-		std::cout << "User is a complete idiot." << std::endl; break;
+		std::cout << "Interesting..." << std::endl; break;
 	}
-
 }
 
 /********************************************************************************************************************************

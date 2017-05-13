@@ -19,7 +19,6 @@ class board
 	int						 checkLegalChecker[_typesSize];
 	bool					 _filesBoard = false;
 	checker**				 gameBoard = new checker*[_boardSize + INITIAL_POINT];
-	std::vector<std::string> Boardfiles = {};
 	std::string				 boardName = "";
 	Errors					 BoardErrors;
 
@@ -48,7 +47,7 @@ public:
 	void resetBoard(void);
 	void clearBoard(void);
 	void emptyCheckLegalChecker(void);
-	void saveBoardToFile(const char *path, const char* fileName);
+	void saveBoardToFile(const char *path, std::string& fileName);
 	void setBoardName(const std::string& _boardName) { boardName = _boardName; }
 	const char* getBoardName(void) const { return boardName.c_str(); }
 

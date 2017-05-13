@@ -38,15 +38,38 @@ void gameManager::connectSecondaryMenu(secondaryMenu& sm)
 	sm.setGameManager(this);
 }
 
+void gameManager::bareFileName(std::string& fullName)
+{
+	stripPathFromFileName(fullName);
+	fullName = cutEnding(fullName);
+}
 
-std::ofstream openFileToWrite(const char* dirPath, const char *fileName, char * extantion)
+void createFullName(const char* dirPath, std::string& fileName, char *extantion)
 {
 	std::string tmpFileName = dirPath;
 	tmpFileName.append("\\");
 	tmpFileName.append(fileName);
 	tmpFileName.append(extantion);
 
-	std::ofstream myFile(tmpFileName.c_str());
+	fileName = tmpFileName;
+}
+
+std::ofstream gameManager::reopenRecordFiles(const char *fileName)
+{
+	playerA.setFile().close();
+	playerB.setFile().close();
+
+	std::ofstream myFile(fileName, std::ofstream::out | std::ofstream::trunc);
+
+	return myFile;
+}
+
+std::ofstream openFileToWrite(const char* dirPath, const char *fileName, char * extantion)
+{
+	std::string fullFileName = fileName;
+	createFullName(dirPath, fullFileName, extantion);
+
+	std::ofstream myFile(fullFileName.c_str());
 
 	return myFile;
 }
@@ -59,19 +82,24 @@ Dinamically allocated:	None
 ********************************************************************************************************************************/
 void gameManager::run()
 {
+	std::string boardFileName = "random_" + std::to_string(round);
+
 	round++;
 	prepareForGame();
 	if (recordGame)
 	{
 		if (boardRandom)
 		{
-			std::string boardFileName = "random_" + std::to_string(round);
+			appendNew(boardFileName);
+			gameBoard.saveBoardToFile(dirPath.c_str(), boardFileName);
 			gameBoard.setBoardName(boardFileName);
-			gameBoard.saveBoardToFile(dirPath.c_str(), boardFileName.c_str());
+			insertToArray(boardFiles, boardFileName, ".gboard");
 		}
 
-		playerA.setFile() = openFileToWrite(dirPath.c_str(),gameBoard.getBoardName(), ".moves-a_full");
-		playerB.setFile() = openFileToWrite(dirPath.c_str(),gameBoard.getBoardName(), ".moves-b_full");
+		boardFileName = gameBoard.getBoardName();
+		openFileForWrite(boardFileName.c_str());
+		insertToArray(playerAFiles, boardFileName, ".moves-a_full");
+		insertToArray(playerBFiles, boardFileName, ".moves-b_full");
 	}
 
 	playKeboard();
@@ -83,13 +111,54 @@ void gameManager::run()
 	}
 }
 
+void gameManager::openFileForWrite(const char *boardName)
+{
+	std::string playerAFile = boardName;
+	std::string playerBFile = boardName;
+
+	createFullName(dirPath.c_str(), playerAFile, ".moves-a_full");
+	createFullName(dirPath.c_str(), playerBFile, ".moves-b_full");
+	
+	playerA.setMovesFileName(playerAFile.c_str());
+	playerB.setMovesFileName(playerBFile.c_str());
+	playerA.setFile() = openFileToWrite(dirPath.c_str() ,boardName, ".moves-a_full");
+	playerB.setFile() = openFileToWrite(dirPath.c_str(), boardName, ".moves-b_full");
+}
+
+void gameManager::reopenMovesFiles(void)
+{
+	std::string fileAName = gameBoard.getBoardName();
+	std::string fileBName = gameBoard.getBoardName();
+
+	createFullName(dirPath.c_str(), fileAName, ".moves-a_full");
+	createFullName(dirPath.c_str(), fileBName, ".moves-a_full");
+
+	playerA.setFile() = reopenRecordFiles(fileAName.c_str());
+	playerA.setFile() = reopenRecordFiles(fileBName.c_str());
+}
+
+void gameManager::insertToArray(std::vector<std::string>& vector, const std::string & boardFileName, const char * extantion)
+{
+	int i = 0;
+	int size = vector.size();
+	std::vector<std::string>::iterator it = vector.begin();
+
+	while (i < size)
+	{
+		if (vector[i].compare(boardFileName) >= 0) { break; }
+
+		i++;
+	}
+
+	vector.insert(it + i, boardFileName);
+}
+
 void gameManager::playKeboard()
 {
 	std::ofstream& playerAMovesFile = playerA.setFile();
 	std::ofstream& playerBMovesFile = playerB.setFile();
 	char			choice;
 	bool			breakGame = false;
-	bool			clearFiles = false;
 	time_t			i = time(NULL);
 	checker**&		myGameBoard = gameBoard.getBoard();
 	secondaryMenu	sm;
@@ -189,7 +258,7 @@ void gameManager::playWithFiles(std::ifstream& playerAfile, std::ifstream& playe
 
 	while (playerAfile.good() || playerBfile.good())
 	{
-		Sleep(delay);
+		if (!quite) { Sleep(delay); }
 		
 		if ((((i++) % 2) == 0) && (checkIfFileAOpen = playerAfile.good()))
 		{
@@ -258,9 +327,25 @@ void gameManager::runGameWithFiles(void)
 			if (playerAfile.is_open()) { playerAfile.close(); }
 			if (playerBfile.is_open()) { playerBfile.close(); }
 		}
-		Sleep(50 * delay);
+		if (!quite) { Sleep(50 * delay); }
 		boardFileIndex++;
 	}
+}
+
+void gameManager::appendNew(std::string & boardFileName)
+{
+	for (auto file : boardFiles)
+	{
+		bareFileName(file);
+		if (file == boardFileName) { boardFileName.append("_New"); }
+	}
+}
+
+void gameManager::stripPathFromFileName(std::string & file)
+{
+	int pathSize = dirPath.size() + 1;
+	int subStringSize = file.size() - pathSize;
+	file = file.substr(pathSize, subStringSize);
 }
 
 void gameManager::finishTheGame(void)
@@ -314,7 +399,7 @@ void gameManager::manageGame(int argc, char** argv)
 	hideCursor();
 	if (argc > 1) { takeUserParams(argc, argv); };
 
-	if (runFromFiles) { openDirectory(); };
+	openDirectory();
 
 	if (movesKeyboard) { keyboardGame(); }
 	else				{ runGameWithFiles(); }
@@ -362,7 +447,9 @@ void gameManager::restartBoard(void)
 	checker *positionsA = playerA.getStartingPosition();
 	checker *positionsB = playerB.getStartingPosition();
 
-	for (; i < CHECKER_NUMBER; i++)
+	if (recordGame) { reopenMovesFiles(); }
+
+	for (; i < CHECKER_NUMBER + 1; i++)
 	{
 		myGameBoard[positionsA[i].row][positionsA[i].col] = positionsA[i];
 		myGameBoard[positionsB[i].row][positionsB[i].col] = positionsB[i];
@@ -374,8 +461,6 @@ void gameManager::restartBoard(void)
 	playerB.setCheckers(CHECK7, &(myGameBoard[positionsB[0].row][positionsB[0].col]));
 	playerB.setCheckers(CHECK8, &(myGameBoard[positionsB[1].row][positionsB[1].col]));
 	playerB.setCheckers(CHECK9, &(myGameBoard[positionsB[2].row][positionsB[2].col]));
-	//playerA.setCheckers(&(myGameBoard[positionsA[0].row][positionsA[0].col]), &(myGameBoard[positionsA[1].row][positionsA[1].col]), &(myGameBoard[positionsA[2].row][positionsA[2].col]));
-	//playerB.setCheckers(&(myGameBoard[positionsB[0].row][positionsB[0].col]), &(myGameBoard[positionsB[1].row][positionsB[1].col]), &(myGameBoard[positionsB[2].row][positionsB[2].col]));
 }
 
 void gameManager::takeUserParams(int argc, char ** argv)
@@ -448,12 +533,19 @@ Dinamically allocated:	None
 void gameManager::restartGame(void)
 {
 	gameRestarted = true;
-	if (recordGame) { clearFiles(); }
 	checker **&myGameBoard = gameBoard.getBoard();
+	//Do we really need it?...
+	/*
 	checker** currCheckerA = playerA.findCurrentChecker();
 	checker** currCheckerB = playerB.findCurrentChecker();
+	*/
+
+	if (recordGame) { clearFiles(); }
+	//Do we really need it?...
+	/*
 	if (nullptr != currCheckerA) { myGameBoard[(*currCheckerA)->row][(*currCheckerA)->col].setCheckerType((*currCheckerA)->walkedOn); }
 	if (nullptr != currCheckerB) { myGameBoard[(*currCheckerB)->row][(*currCheckerB)->col].setCheckerType((*currCheckerB)->walkedOn); }
+	*/
 
 	playerA.resetPlayer();
 	playerB.resetPlayer();
@@ -477,8 +569,8 @@ void gameManager::ransomiseCheckers(void)
 	playerB.setCheckers(CHECK7, gameBoard.randomisePlayerChecker(CHECK7));
 	playerB.setCheckers(CHECK8, gameBoard.randomisePlayerChecker(CHECK8));
 	playerB.setCheckers(CHECK9, gameBoard.randomisePlayerChecker(CHECK9));
-	gameBoard.randomisePlayerChecker(FlgA);
-	gameBoard.randomisePlayerChecker(FlgB);
+	playerA.setCheckers(FlgA,	gameBoard.randomisePlayerChecker(FlgA));
+	playerB.setCheckers(FlgB,	gameBoard.randomisePlayerChecker(FlgB));
 }
 
 void gameManager::clearFiles(void)

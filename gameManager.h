@@ -79,6 +79,13 @@ private:
 	std::string cutEnding(const std::string& fileName);
 	bool compareFilesName(int & pAFileIndex, int & boardFileIndex, std::vector<std::string>& playerFiles);
 	void runGameWithFiles(void);
+	void appendNew(std::string& boardFileName);
+	void stripPathFromFileName(std::string& file);
+	void bareFileName(std::string& file);
+	void openFileForWrite(const char *boardName);
+	void reopenMovesFiles(void);
+	void insertToArray(std::vector<std::string>& vector, const std::string& boardFileName, const char *extantion);
+	std::ofstream reopenRecordFiles(const char *fileName);
 	bool checkIfQuiteIsPossibe(void)
 	{
 		if (!boardRandom && !movesKeyboard) { return true; }
