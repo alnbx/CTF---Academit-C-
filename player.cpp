@@ -46,12 +46,18 @@ bool player::areAllDead(void)
 	return false;
 }
 
+/********************************************************************************************************************************
+Function Name:			addToScore
+Return value:			None
+Description:			adds to score of the player and prints a message
+Dinamically allocated:	None
+********************************************************************************************************************************/
 void player::addToScore(bool quite)
 {
 	gotoxyAux(6, 6);
 	setTextColor(DARK_BLUE, WHITE);
 	if (!quite) { std::cout << name << " had won the game!"; };
-	Sleep(2000);
+	Sleep(1500);
 	setTextColor(WHITE, BLACK);
 	score++;
 }
@@ -121,6 +127,12 @@ void player::resetPlayer(void)
 	numberOfCheckersLive = CHECKER_NUMBER;
 }
 
+/********************************************************************************************************************************
+Function Name:			setCheckers
+Return value:			None
+Description:			sets a pointer to a checker for the player.
+Dinamically allocated:	None
+********************************************************************************************************************************/
 void player::setCheckers(types checkerNum, checker *checkerToSet)
 {
 	switch (checkerNum)
@@ -177,6 +189,12 @@ void player::setKeys(char * keysToSet)
 	for (; index < KEYS_NUMBER; index++)	{ gameKeys[index] = keysToSet[index]; }
 }
 
+/********************************************************************************************************************************
+Function Name:			moveFromFile
+Return value:			bool
+Description:			moves a checker on the board if possible - played with files. returns true if a checker has captured a flag
+Dinamically allocated:	None
+********************************************************************************************************************************/
 bool player:: moveFromFile(checker**& board, int keys[], bool quite)
 {
 	bool returnRes;
@@ -201,8 +219,13 @@ bool player:: moveFromFile(checker**& board, int keys[], bool quite)
 	return false;
 }
 
-////////////WTFFFFFFFFFFFFFFFFFFFFFFF
-bool player::readMovesFormTextFile(checker**& board,std::ifstream &movesFile, bool quite) // TODO: Make Better
+/********************************************************************************************************************************
+Function Name:			readMovesFormTextFile
+Return value:			bool
+Description:			read a move from a texst file and moves correspondingly
+Dinamically allocated:	None
+********************************************************************************************************************************/
+bool player::readMovesFormTextFile(checker**& board,std::ifstream &movesFile, bool quite)
 {
 	if (movesFile.good())
 	{
@@ -272,6 +295,12 @@ void player::updateCheckerAddress(checker**& board, checker **currentChecker)
 	*currentChecker = &board[row][col];
 }
 
+/********************************************************************************************************************************
+Function Name:			writeToFile
+Return value:			None
+Description:			write a move to a file
+Dinamically allocated:	None
+********************************************************************************************************************************/
 void player::writeToFile(checker *check, std::ofstream& movesFile)
 {
 	if (check->checkBoardLimits())

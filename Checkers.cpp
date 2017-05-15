@@ -63,6 +63,12 @@ void checker::setColsAndRowsCheck2()
 	alwaysLose = CHECK9;
 }
 
+/********************************************************************************************************************************
+Function Name:			setColsAndRowsCheck3
+Return value:			None
+Description:			The function sets the game logic for checker 3.
+Dinamically allocated:	None
+********************************************************************************************************************************/
 void checker::setColsAndRowsCheck3()
 {
 	winningRows[7] = true;
@@ -70,9 +76,9 @@ void checker::setColsAndRowsCheck3()
 }
 
 /********************************************************************************************************************************
-Function Name:			setColsAndRowsCheck1
+Function Name:			swapPlayersPosition
 Return value:			None
-Description:			The function sets the game logic for checker 3.
+Description:			The function swaps two checkers
 Dinamically allocated:	None
 ********************************************************************************************************************************/
 static void swapPlayersPosition(checker **playerAChecker, checker **playerBChecker)

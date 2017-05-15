@@ -46,9 +46,8 @@ Dinamically allocated:	None
 bool secondaryMenu::handleUserChoice(void)
 {
 	unsigned char userChose = 0;
-	bool choiceCheck = true;
 
-	while (choiceCheck)
+	while (true)
 	{
 		switch (choice)
 		{
@@ -60,7 +59,8 @@ bool secondaryMenu::handleUserChoice(void)
 
 		case (EXIT_GAME):
 			std::cout << "bye bye..." << std::endl;
-			exit(0);
+			_gameManager->endGame = true;
+			return true;
 			//breaking
 
 		case (START_AGAIN):
@@ -69,6 +69,7 @@ bool secondaryMenu::handleUserChoice(void)
 
 		case (MAIN_MENU):
 			_gameManager->round--;
+			_gameManager->boardFiles.pop_back();
 			return true;
 
 		default:

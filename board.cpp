@@ -32,7 +32,7 @@ Return value:			None
 Description:			The function sets all the checkers to BLANK types (empty cells).
 Dinamically allocated:	None
 ********************************************************************************************************************************/
-void board::emptyBoard(checker**& gameBoard)
+/*void board::emptyBoard(checker**& gameBoard)
 {
 	int row = 0;
 	int col = 0;
@@ -43,7 +43,7 @@ void board::emptyBoard(checker**& gameBoard)
 			gameBoard[row][col].setCheckerType(BLANK);
 			gameBoard[row][col].setPosition(col, row);
 		}
-}
+}*/
 
 /********************************************************************************************************************************
 Function Name:			openfileForReading
@@ -174,21 +174,26 @@ Dinamically allocated:	None
 ********************************************************************************************************************************/
 void board::messageErrorPlayers(const char *fileName, bool legalAmountPlayerA, bool legalAmountPlayerB, bool creationOfBoard)
 {
-	if (!legalAmountPlayerA)
-		std::cout << "Wrong settings for player A tools in file " << fileName << std::endl;
-
-	if (!legalAmountPlayerB)
-		std::cout << "Wrong settings for player B tools in file " << fileName << std::endl;
-
-	if (!creationOfBoard)
-		printErrorsOfBoard(fileName);
+	clearScreen();
+	gotoxy(0, 0);
+	setTextColor(WHITE, BLACK);
+	if (!legalAmountPlayerA) { std::cout << "Wrong settings for player A tools in file " << fileName << std::endl; }
+	if (!legalAmountPlayerB) { std::cout << "Wrong settings for player B tools in file " << fileName << std::endl; }
+	if (!creationOfBoard)	 {printErrorsOfBoard(fileName);}
+	Sleep(1500);
 }
 
+/********************************************************************************************************************************
+Function Name:			updatePlayerIfNeeded
+Return value:			None
+Description:			updates checker's pointer within the player.
+Dinamically allocated:	None
+********************************************************************************************************************************/
 void board::updatePlayerIfNeeded(types checkerType, int row, int col, player & playerA, player & playerB)
 {
-	if (isChecker(checkerType))
+	if (isChecker(checkerType) || checkerType == FlgA || checkerType == FlgB)
 	{
-		if ((checkerType == CHECK1) || (checkerType == CHECK2) || (checkerType == CHECK3)) 
+		if ((checkerType == CHECK1) || (checkerType == CHECK2) || (checkerType == CHECK3) || (checkerType == FlgA) )
 			playerA.setCheckers(checkerType, &(gameBoard[row][col]));
 		else 
 			playerB.setCheckers(checkerType, &(gameBoard[row][col]));
@@ -323,7 +328,7 @@ bool board::loadBoardFromTextFile(const char *fileName, player& playerA, player&
 	bool legalAmountPlayerB = false;
 
 	std::ifstream file = openfileForReading(fileName);
-	if (!(file.is_open())) { std::cout << "Could not open " << fileName << std::endl; exit(-2); return false; } // TODO: exit with no exit
+	if (!(file.is_open())) { clearScreen(); Sleep(1500); std::cout << "Could not open board name: " << fileName << std::endl; return false; }
 	
 	creationOfBoard = createBoardFromFile(fileName, file, playerA, playerB);
 	//printBoard();
@@ -341,6 +346,12 @@ bool board::loadBoardFromTextFile(const char *fileName, player& playerA, player&
 	return true;
 }
 
+/********************************************************************************************************************************
+Function Name:			drawBoardLine
+Return value:			None
+Description:			Draws the frame of the board.
+Dinamically allocated:	None
+********************************************************************************************************************************/
 void board::drawBoardLine(int row)
 {
 	int col = 0;
@@ -366,6 +377,12 @@ void board::drawBoardLine(int row)
 	std::cout << std::endl;
 }
 
+/********************************************************************************************************************************
+Function Name:			drawLineSeperators
+Return value:			None
+Description:			Draws the line seperators.
+Dinamically allocated:	None
+********************************************************************************************************************************/
 void board::drawLineSeperators(void)
 {
 	int col = 0;
@@ -414,12 +431,18 @@ void board::resetBoard(void)
 		for (col = 0; col <= _boardSize; col++)
 		{
 			types checkerType = gameBoard[row][col].getType();
-			if ((isChecker(checkerType)) || (checkerType == FlgA) || (checkerType == FlgB) )
+			if ((isChecker(checkerType)) || (checkerType == FlgA) || (checkerType == FlgB) || (checkerType == BLANK) )
 				gameBoard[row][col].resetChecker(_boardSize);
 		}
 	}
 }
 
+/********************************************************************************************************************************
+Function Name:			clearBoard
+Return value:			None
+Description:			Clears the board.
+Dinamically allocated:	None
+********************************************************************************************************************************/
 void board::clearBoard(void)
 {
 	checker clearedChecker;
@@ -428,7 +451,10 @@ void board::clearBoard(void)
 	for (; row < _boardSize + INITIAL_POINT; ++row)
 	{
 		for (col = 0; col < _boardSize + INITIAL_POINT; ++col)
+		{
 			gameBoard[row][col] = clearedChecker;
+			gameBoard[row][col].setPosition(col, row);
+		}
 	}
 }
 
@@ -446,6 +472,12 @@ void board::emptyCheckLegalChecker(void)
 		checkLegalChecker[i] = 0;
 }
 
+/********************************************************************************************************************************
+Function Name:			letterOfType
+Return value:			char
+Description:			Returns the letter that represnts forest(F), sea(S), flag A(A), flag B(B) and the checkers
+Dinamically allocated:	None
+********************************************************************************************************************************/
 char board::letterOfType(types checkerType)
 {
 	if (checkerType == BLANK)
@@ -462,6 +494,12 @@ char board::letterOfType(types checkerType)
 		return ((char)((int)checkerType + '0'));
 }
 
+/********************************************************************************************************************************
+Function Name:			saveBoardToFile
+Return value:			None
+Description:			Saves a board to a file.
+Dinamically allocated:	None
+********************************************************************************************************************************/
 void board::saveBoardToFile(const char* path, std::string& fileName)
 {
 	std::ofstream boardFile = openFileToWrite(path, fileName.c_str(), ".gboard");

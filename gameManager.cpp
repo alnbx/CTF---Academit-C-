@@ -38,12 +38,24 @@ void gameManager::connectSecondaryMenu(secondaryMenu& sm)
 	sm.setGameManager(this);
 }
 
+/********************************************************************************************************************************
+Function Name:			bareFileName
+Return value:			None
+Description:			strips the path and extention from the name of the file.
+Dinamically allocated:	None
+********************************************************************************************************************************/
 void gameManager::bareFileName(std::string& fullName)
 {
 	stripPathFromFileName(fullName);
 	fullName = cutEnding(fullName);
 }
 
+/********************************************************************************************************************************
+Function Name:			createFullName
+Return value:			None
+Description:			Creates full name including path and extantion.
+Dinamically allocated:	None
+********************************************************************************************************************************/
 void createFullName(const char* dirPath, std::string& fileName, char *extantion)
 {
 	std::string tmpFileName = dirPath;
@@ -54,6 +66,12 @@ void createFullName(const char* dirPath, std::string& fileName, char *extantion)
 	fileName = tmpFileName;
 }
 
+/********************************************************************************************************************************
+Function Name:			reopenRecordFiles
+Return value:			std::ofstream
+Description:			reopens and clear the content of a file.
+Dinamically allocated:	None
+********************************************************************************************************************************/
 std::ofstream gameManager::reopenRecordFiles(const char *fileName)
 {
 	playerA.setFile().close();
@@ -64,6 +82,12 @@ std::ofstream gameManager::reopenRecordFiles(const char *fileName)
 	return myFile;
 }
 
+/********************************************************************************************************************************
+Function Name:			openFileToWrite
+Return value:			None
+Description:			Opens file for writing.
+Dinamically allocated:	None
+********************************************************************************************************************************/
 std::ofstream openFileToWrite(const char* dirPath, const char *fileName, char * extantion)
 {
 	std::string fullFileName = fileName;
@@ -82,9 +106,9 @@ Dinamically allocated:	None
 ********************************************************************************************************************************/
 void gameManager::run()
 {
-	std::string boardFileName = "random_" + std::to_string(round);
-
 	round++;
+
+	std::string boardFileName = "random_" + std::to_string(round);
 	prepareForGame();
 	if (recordGame)
 	{
@@ -111,6 +135,12 @@ void gameManager::run()
 	}
 }
 
+/********************************************************************************************************************************
+Function Name:			openFileForWrite
+Return value:			None
+Description:			Opens files for writing.
+Dinamically allocated:	None
+********************************************************************************************************************************/
 void gameManager::openFileForWrite(const char *boardName)
 {
 	std::string playerAFile = boardName;
@@ -125,6 +155,12 @@ void gameManager::openFileForWrite(const char *boardName)
 	playerB.setFile() = openFileToWrite(dirPath.c_str(), boardName, ".moves-b_full");
 }
 
+/********************************************************************************************************************************
+Function Name:			reopenMovesFiles
+Return value:			None
+Description:			reopens file.
+Dinamically allocated:	None
+********************************************************************************************************************************/
 void gameManager::reopenMovesFiles(void)
 {
 	std::string fileAName = gameBoard.getBoardName();
@@ -137,6 +173,12 @@ void gameManager::reopenMovesFiles(void)
 	playerA.setFile() = reopenRecordFiles(fileBName.c_str());
 }
 
+/********************************************************************************************************************************
+Function Name:			insertToArray
+Return value:			None
+Description:			insert a string to an array. Used for inserting board and movement files into the files vectors.
+Dinamically allocated:	None
+********************************************************************************************************************************/
 void gameManager::insertToArray(std::vector<std::string>& vector, const std::string & boardFileName, const char * extantion)
 {
 	int i = 0;
@@ -150,9 +192,15 @@ void gameManager::insertToArray(std::vector<std::string>& vector, const std::str
 		i++;
 	}
 
-	vector.insert(it + i, boardFileName);
+	vector.insert(it + i,dirPath + boardFileName + extantion);
 }
 
+/********************************************************************************************************************************
+Function Name:			playKeboard
+Return value:			None
+Description:			Play games with keyboard.
+Dinamically allocated:	None
+********************************************************************************************************************************/
 void gameManager::playKeboard()
 {
 	std::ofstream& playerAMovesFile = playerA.setFile();
@@ -192,6 +240,12 @@ void gameManager::playKeboard()
 	}
 }
 
+/********************************************************************************************************************************
+Function Name:			printEqualSigns
+Return value:			None
+Description:			Print equal signs
+Dinamically allocated:	None
+********************************************************************************************************************************/
 static void printEqualSigns(int len)
 {
 	int i = 0;
@@ -200,6 +254,12 @@ static void printEqualSigns(int len)
 	std::cout << "|" << std::endl;
 }
 
+/********************************************************************************************************************************
+Function Name:			printClosingFrame
+Return value:			None
+Description:			Print closing signs: |
+Dinamically allocated:	None
+********************************************************************************************************************************/
 static void printClosingFrame(int maxLen, int printedSoFar)
 {
 	int spacesToPrint = maxLen - printedSoFar - 1;
@@ -209,6 +269,12 @@ static void printClosingFrame(int maxLen, int printedSoFar)
 	std::cout << '|' << std::endl;
 }
 
+/********************************************************************************************************************************
+Function Name:			printSpaces
+Return value:			None
+Description:			Print spaces
+Dinamically allocated:	None
+********************************************************************************************************************************/
 static void printSpaces(int size)
 {
 	int i = 0;
@@ -216,6 +282,12 @@ static void printSpaces(int size)
 	for (; i < size; i++) { std::cout << " "; }
 }
 
+/********************************************************************************************************************************
+Function Name:			calcDigits
+Return value:			None
+Description:			calculate how many digits in a number.
+Dinamically allocated:	None
+********************************************************************************************************************************/
 static int calcDigits(int score)
 {
 	int digits = 0;
@@ -229,6 +301,12 @@ static int calcDigits(int score)
 	return digits;
 }
 
+/********************************************************************************************************************************
+Function Name:			printSummaryHead
+Return value:			None
+Description:			Prints the head of the game summary function.
+Dinamically allocated:	None
+********************************************************************************************************************************/
 static void printSummaryHead(int& startPrintingCol, int &startPrintingRow, int maxLen)
 {
 	std::string gameSummaryStr = "Game Summary";
@@ -250,6 +328,12 @@ static void printSummaryHead(int& startPrintingCol, int &startPrintingRow, int m
 	std::cout << "|";
 }
 
+/********************************************************************************************************************************
+Function Name:			printPlayerSummary
+Return value:			None
+Description:			Prints the player's score in the game summary function.
+Dinamically allocated:	None
+********************************************************************************************************************************/
 static void printPlayerSummary(int& startPrintingCol, int &startPrintingRow, int maxLen, const char *name, int score)
 {
 	int digits = 0;
@@ -270,6 +354,12 @@ static void printPlayerSummary(int& startPrintingCol, int &startPrintingRow, int
 	std::cout << "|";
 }
 
+/********************************************************************************************************************************
+Function Name:			printFinish
+Return value:			None
+Description:			Prints the summary of the total games.
+Dinamically allocated:	None
+********************************************************************************************************************************/
 void gameManager::printFinish(std::string& playerAName, std::string& playerBName, int maxLen)
 {
 	int startPrintingRow = 12;
@@ -289,6 +379,12 @@ void gameManager::printFinish(std::string& playerAName, std::string& playerBName
 	Sleep(delay * 10);
 }
 
+/********************************************************************************************************************************
+Function Name:			quiteModeSummery
+Return value:			None
+Description:			Prints the summery of a quite mode game
+Dinamically allocated:	None
+********************************************************************************************************************************/
 void gameManager::quiteModeSummery(int numberOfMoves, const std::string& winnerName)
 {
 	int startPrintingRow = 12, startPrintingCol = 48;
@@ -302,6 +398,12 @@ void gameManager::quiteModeSummery(int numberOfMoves, const std::string& winnerN
 	std::cout << "Winner: " << winnerName << std::endl;
 }
 
+/********************************************************************************************************************************
+Function Name:			playWithFiles
+Return value:			None
+Description:			Play the game with files.
+Dinamically allocated:	None
+********************************************************************************************************************************/
 void gameManager::playWithFiles(std::ifstream& playerAfile, std::ifstream& playerBfile)
 {
 	int numberOfMoves = 0;
@@ -329,6 +431,12 @@ void gameManager::playWithFiles(std::ifstream& playerAfile, std::ifstream& playe
 	if (quite) { quiteModeSummery(numberOfMoves, winnerName); }
 }
 
+/********************************************************************************************************************************
+Function Name:			cutEnding
+Return value:			std::string
+Description:			strips the extention from the file name.
+Dinamically allocated:	None
+********************************************************************************************************************************/
 std::string gameManager::cutEnding(const std::string& fileName)
 {
 	std::string nameWithoutEnding;
@@ -340,6 +448,12 @@ std::string gameManager::cutEnding(const std::string& fileName)
 	return nameWithoutEnding;
 }
 
+/********************************************************************************************************************************
+Function Name:			compareFilesName
+Return value:			bool
+Description:			Compare file names. return true if the name is equal
+Dinamically allocated:	None
+********************************************************************************************************************************/
 bool gameManager::compareFilesName(int &pFileIndex, int &boardFileIndex, std::vector<std::string>& playerFiles)
 {
 	std::string playerAFile = cutEnding(playerFiles[pFileIndex]);
@@ -356,6 +470,12 @@ bool gameManager::compareFilesName(int &pFileIndex, int &boardFileIndex, std::ve
 	return false;
 }
 
+/********************************************************************************************************************************
+Function Name:			runGameWithFiles
+Return value:			None
+Description:			Manager function to run the game with files.
+Dinamically allocated:	None
+********************************************************************************************************************************/
 void gameManager::runGameWithFiles(void)
 {
 	int pAFileIndex = 0;
@@ -369,11 +489,11 @@ void gameManager::runGameWithFiles(void)
 
 	while (((pAFileIndex < fileAsize) || (pBFileIndex < fileBsize)) && boardFileIndex < boardsFileSize)
 	{
-		if (pAFileIndex < fileAsize) { if (compareFilesName(pAFileIndex, boardFileIndex, playerAFiles)) { playerAfile.open(playerAFiles[pAFileIndex++].c_str()); } }
-		if (pBFileIndex < fileBsize) { if (compareFilesName(pBFileIndex, boardFileIndex, playerBFiles)) { playerBfile.open(playerBFiles[pBFileIndex++].c_str()); } }
-
 		if (gameBoard.loadBoardFromTextFile(boardFiles[boardFileIndex].c_str(), playerA, playerB))
 		{
+			if (pAFileIndex < fileAsize) { if (compareFilesName(pAFileIndex, boardFileIndex, playerAFiles)) { playerAfile.open(playerAFiles[pAFileIndex++].c_str()); } }
+			if (pBFileIndex < fileBsize) { if (compareFilesName(pBFileIndex, boardFileIndex, playerBFiles)) { playerBfile.open(playerBFiles[pBFileIndex++].c_str()); } }
+
 			setGameLogic();
 			if (!quite) { clearScreen();  gameBoard.printBoard(); }
 			playWithFiles(playerAfile, playerBfile);
@@ -381,11 +501,18 @@ void gameManager::runGameWithFiles(void)
 			if (playerAfile.is_open()) { playerAfile.close(); }
 			if (playerBfile.is_open()) { playerBfile.close(); }
 		}
+
 		if (!quite) { Sleep(50 * delay); }
 		boardFileIndex++;
 	}
 }
 
+/********************************************************************************************************************************
+Function Name:			appendNew
+Return value:			None
+Description:			adds the string "_New" to a file name
+Dinamically allocated:	None
+********************************************************************************************************************************/
 void gameManager::appendNew(std::string & boardFileName)
 {
 	for (auto file : boardFiles)
@@ -395,6 +522,12 @@ void gameManager::appendNew(std::string & boardFileName)
 	}
 }
 
+/********************************************************************************************************************************
+Function Name:			stripPathFromFileName
+Return value:			None
+Description:			strips the path from the file name
+Dinamically allocated:	None
+********************************************************************************************************************************/
 void gameManager::stripPathFromFileName(std::string & file)
 {
 	int pathSize = dirPath.size() + 1;
@@ -402,19 +535,29 @@ void gameManager::stripPathFromFileName(std::string & file)
 	file = file.substr(pathSize, subStringSize);
 }
 
+/********************************************************************************************************************************
+Function Name:			finishTheGame
+Return value:			None
+Description:			finishes the game - manager function
+Dinamically allocated:	None
+********************************************************************************************************************************/
 void gameManager::finishTheGame(void)
 {
 	std::string playerAName = playerA.getName();
 	std::string playerBName = playerB.getName();
 	int maxLen = (max(14, max(playerAName.length(), playerBName.length())) + 3);
 
-	//if (runFromFiles)	{ printFinish(playerAName, playerBName, maxLen); }
 	printFinish(playerAName, playerBName, maxLen);
 }
 
+/********************************************************************************************************************************
+Function Name:			keyboardGame
+Return value:			None
+Description:			play games with keyboard
+Dinamically allocated:	None
+********************************************************************************************************************************/
 void gameManager::keyboardGame()
 {
-	bool endGame = false;
 	int numberOfFileBoards = boardFiles.size();
 
 	while (!(endGame))
@@ -517,6 +660,12 @@ void gameManager::restartBoard(void)
 	playerB.setCheckers(CHECK9, &(myGameBoard[positionsB[2].row][positionsB[2].col]));
 }
 
+/********************************************************************************************************************************
+Function Name:			takeUserParams
+Return value:			None
+Description:			take user parameters and turn flags on
+Dinamically allocated:	None
+********************************************************************************************************************************/
 void gameManager::takeUserParams(int argc, char ** argv)
 {
 	int i = 1;
@@ -527,13 +676,19 @@ void gameManager::takeUserParams(int argc, char ** argv)
 	{
 		key = argv[i];
 
-		if (!key.compare("-quite")) { value = "t"; }
+		if (!key.compare("-quiet")) { value = "t"; }
 		else					    { value = argv[++i]; }
 
 		turnOnFlags(key, value);
 	}
 }
 
+/********************************************************************************************************************************
+Function Name:			stringToNumber
+Return value:			unsigned int
+Description:			takes a string, converts it to number and returns the number
+Dinamically allocated:	None
+********************************************************************************************************************************/
 static unsigned int stringToNumber(std::string str)
 {
 	unsigned int i = 0;
@@ -548,12 +703,18 @@ static unsigned int stringToNumber(std::string str)
 	return result;
 }
 
+/********************************************************************************************************************************
+Function Name:			turnOnFlags
+Return value:			None
+Description:			turns on the game flags based on user choice.
+Dinamically allocated:	None
+********************************************************************************************************************************/
 void gameManager::turnOnFlags(std::string key, std::string value)
 {
 	std::string _strBoard = "-board";
 	std::string _strMoves = "-moves";
 	std::string _strPath  = "-path";
-	std::string _strquiet = "-quite";
+	std::string _strquiet = "-quiet";
 	std::string _strDelay = "-delay";
 
 	if (MATCH == (key.compare(_strBoard)))
@@ -572,6 +733,12 @@ void gameManager::turnOnFlags(std::string key, std::string value)
 	else; //Problem - illegal parameter;
 }
 
+/********************************************************************************************************************************
+Function Name:			openDirectory
+Return value:			None
+Description:			Opens a directory
+Dinamically allocated:	None
+********************************************************************************************************************************/
 void gameManager::openDirectory(void)
 {
 	directoryHandeling dir = { this };
@@ -627,12 +794,24 @@ void gameManager::ransomiseCheckers(void)
 	playerB.setCheckers(FlgB,	gameBoard.randomisePlayerChecker(FlgB));
 }
 
+/********************************************************************************************************************************
+Function Name:			clearFiles
+Return value:			None
+Description:			clear players movement files
+Dinamically allocated:	None
+********************************************************************************************************************************/
 void gameManager::clearFiles(void)
 {
 	playerA.setFile().clear();
 	playerB.setFile().clear();
 }
 
+/********************************************************************************************************************************
+Function Name:			setDefaultPath
+Return value:			None
+Description:			sets default path
+Dinamically allocated:	None
+********************************************************************************************************************************/
 void gameManager::setDefaultPath(void)
 {
 	char *buffer = NULL;
@@ -656,6 +835,12 @@ void gameManager::setPlayersAbilityToMove(void)
 	playerB.getChecker(2)->setMoveForest(true);
 }
 
+/********************************************************************************************************************************
+Function Name:			setGameLogic
+Return value:			None
+Description:			sets the game logic for the players
+Dinamically allocated:	None
+********************************************************************************************************************************/
 void gameManager::setGameLogic(void)
 {
 	playerA.setPointersToCheckers();

@@ -5,6 +5,12 @@
 
 #define MATCH	0
 
+/********************************************************************************************************************************
+Function Name:			parseBuffedData
+Return value:			None
+Description:			Parse the data recieved from the directory.
+Dinamically allocated:	None
+********************************************************************************************************************************/
 void directoryHandeling::parseBuffedData(std::string data, std::string& dirPath)
 {
 	int end = 0;
@@ -21,6 +27,12 @@ void directoryHandeling::parseBuffedData(std::string data, std::string& dirPath)
 	}
 }
 
+/********************************************************************************************************************************
+Function Name:			openDir
+Return value:			None
+Description:			Opens a directory directory.
+Dinamically allocated:	None
+********************************************************************************************************************************/
 void directoryHandeling::openDir(std::string& dirPath)
 {
 	char buffer[4096];
@@ -41,6 +53,12 @@ void directoryHandeling::openDir(std::string& dirPath)
 	devideToPlayersAndBoard();
 }
 
+/********************************************************************************************************************************
+Function Name:			devideToPlayersAndBoard
+Return value:			None
+Description:			parses the directory content into 3 vectors: board files, playerA file, playerB files
+Dinamically allocated:	None
+********************************************************************************************************************************/
 void directoryHandeling::devideToPlayersAndBoard(void)
 {
 	size_t index = 0; 

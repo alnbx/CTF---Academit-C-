@@ -30,6 +30,7 @@ class gameManager
 	bool						recordGame = false;
 	bool						runFromFiles = false;
 	bool						quite = false;
+	bool						endGame = false;
 	std::string					dirPath = "";
 	std::vector<std::string>	boardFiles;
 	std::vector<std::string>	playerAFiles;

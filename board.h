@@ -28,7 +28,7 @@ public:
 		for (int i = 0; i < _boardSize +INITIAL_POINT ; i++)
 			gameBoard[i] = new checker[_boardSize +INITIAL_POINT];
 
-		emptyBoard(gameBoard);
+		//emptyBoard(gameBoard);
 		if (!(_filesBoard)) { createBoard(); }
 	}
 

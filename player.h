@@ -66,7 +66,7 @@ public:
 	}
 	*/
 	void setMovesFileName(const char* fileName) { movesFileName = fileName; }
-	void reopenMovesFile(void);
+	//void reopenMovesFile(void);
 	int getScore(void) { return score; }
 	std::string getName(void) { return name; }
 	checker** findCurrentChecker(void);

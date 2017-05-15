@@ -34,6 +34,10 @@ Dinamically allocated:	None
 void primaryMenu::printMenuAndTakeUserChoice(gameManager *manager, bool &endGame)
 {
 	unsigned char userChose = 0;
+
+	if (endGame)
+		return;
+
 	printMenu(manager);
 
 	std::cin >> userChose;

@@ -3,6 +3,8 @@
 #include <iostream>
 #include <vector>
 
+#include "Utils.h"
+
 class Errors
 {
 	std::vector<char>	charsError = {};
